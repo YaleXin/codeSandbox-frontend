@@ -27,9 +27,9 @@
       </a-menu>
     </a-col>
     <a-col flex="100px">
-      <div v-if="store.state.user?.loginUser?.userName">
+      <div v-if="store.getters['user/getUser']?.id > 0">
         <a-popover title="">
-          <a-button>{{ store.state.user?.loginUser?.userName }}</a-button>
+          <a-button>{{ store.getters["user/getUser"]?.username }}</a-button>
           <template #content>
             <a-button status="danger" @click="logoutClick">注销</a-button>
           </template>
@@ -41,6 +41,7 @@
           <template #content>
             <a-button type="primary" @click="loginClick">登录</a-button>
             <a-button type="primary" @click="registerClick">注册</a-button>
+            {{ store.getters["user/getUser"].username }}
           </template>
         </a-popover>
       </div>
@@ -58,30 +59,31 @@ import { UserControllerService } from "../../generated/user";
 
 const loginClick = async () => {
   router.push({
-      path: "/user/login",
-      replace: false, 
-    });
+    path: "/user/login",
+    replace: false,
+  });
 };
 
 const registerClick = async () => {
   router.push({
-      path: "/user/register",
-      replace: false, 
-    });
+    path: "/user/register",
+    replace: false,
+  });
 };
 
 const logoutClick = async () => {
-  let res; 
-  if(res.code == 0){
-    // 注销成功,跳转到主页
-    await store.dispatch("user/logoutUser");
-    router.push({
-      path: "/",
-      replace: true, //不会占用浏览器历史页面的堆栈,直接替换当前的登录页
+  // 注销成功,跳转到主页
+  store
+    .dispatch("user/clearLoginUser")
+    .then((res) => {
+      router.push({
+        path: "/",
+        replace: true, //不会占用浏览器历史页面的堆栈,直接替换当前的登录页
+      });
+    })
+    .catch((e) => {
+      message.error("注销失败");
     });
-  } else {
-    message.error("注销失败，" + res.message);
-  }
 };
 const router = useRouter();
 const store = useStore();
@@ -106,12 +108,12 @@ router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
 });
 
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "管理员",
-    userRole: "ACCESS_ENUM.ADMIN",
-  });
-}, 3000);
+// setTimeout(() => {
+//   store.dispatch("user/getLoginUser", {
+//     userName: "管理员",
+//     userRole: "ACCESS_ENUM.ADMIN",
+//   });
+// }, 3000);
 
 const doMenuClick = (key: string) => {
   router.push({

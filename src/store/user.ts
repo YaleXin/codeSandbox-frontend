@@ -2,26 +2,64 @@
 import { StoreOptions } from "vuex";
 export default {
   namespaced: true,
+  getters: {
+    getUser(state) {
+      // 如果内存中有，则直接使用
+      if (state.loginUser.id !== 0) {
+        return state.loginUser;
+      } else {
+        // 否则，从 localStorage 中读取
+        let localData: string = localStorage.getItem('loginUser') || JSON.stringify(state.loginUser);
+        state.loginUser = JSON.parse(localData);
+        return state.loginUser;
+      }
+
+    }
+  },
   state: () => ({
     loginUser: {
-      userName: "未登录",
-      id: 0
+      id: 0,
+      role: 9999,
+      username: "",
+      token: ""
     },
   }),
+  // 异步操作在action中进行，再传递到mutation
   actions: {
-    async getLoginUser({ commit, state }, payload) {
-      // 从远程请求获取登录信息
-     
+    saveLoginUser(context, user) {
+      return new Promise((resolve, reject) => {
+        if (user.id <= 0) {
+          reject("user.id <= 0")
+        } else if (user.token == "") {
+          reject("user.token == \"\"")
+        }
+        else {
+          context.commit('updateUser', user)
+          resolve('ok')
+        }
+      })
     },
-    logoutUser({ commit, state }, payload){
-      commit("updateUser", {
-        username: "未登录",
-      });
-    },
+    clearLoginUser(context) {
+      return new Promise((resolve, reject) => {
+        context.commit('clearUser')
+        resolve('ok')
+      })
+    }
   },
+  // 同步操作在   mutations 中
   mutations: {
     updateUser(state, payload) {
       state.loginUser = payload;
+      localStorage.setItem('loginUser', JSON.stringify(payload));
     },
+    clearUser(state) {
+      localStorage.removeItem('loginUser');
+      state.loginUser = {
+        id: 0,
+        role: 9999,
+        username: "",
+        token: ""
+      };
+    }
   },
 } as StoreOptions<any>;

@@ -17,8 +17,8 @@ export type { vo_KeyPairVO } from './models/vo_KeyPairVO';
 export type { vo_UserVO } from './models/vo_UserVO';
 
 export { CodeExecutionService } from './services/CodeExecutionService';
-export { DefaultService } from './services/DefaultService';
 export { KeyListService } from './services/KeyListService';
 export { LanguagesService } from './services/LanguagesService';
 export { LoginService } from './services/LoginService';
 export { NewKeyService } from './services/NewKeyService';
+export { RegisterService } from './services/RegisterService';

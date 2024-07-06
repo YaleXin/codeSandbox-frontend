@@ -1,6 +1,5 @@
 <template>
   <div class="userLoginView">
-    <h2 style="margin-bottom: 16px">用户登录</h2>
     <a-form
       style="max-width: 480px; margin: 0 auto"
       label-align="left"
@@ -8,14 +7,11 @@
       :model="form"
       @submit="handleSubmit"
     >
-      <a-form-item field="userAccount" label="账号">
-        <a-input v-model="form.userAccount" placeholder="请输入账号" />
+      <a-form-item field="username" label="账号">
+        <a-input v-model="form.username" placeholder="请输入账号" />
       </a-form-item>
-      <a-form-item field="userPassword" tooltip="密码不少于 8 位" label="密码">
-        <a-input-password
-          v-model="form.userPassword"
-          placeholder="请输入密码"
-        />
+      <a-form-item field="password" tooltip="密码不少于 8 位" label="密码">
+        <a-input-password v-model="form.password" placeholder="请输入密码" />
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 120px"
@@ -27,8 +23,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-
+import { reactive, ref } from "vue";
+import { dto_UserLoginRequest, LoginService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -36,9 +32,9 @@ import { useStore } from "vuex";
 /**
  * 表单信息
  */
-const form = reactive({
-  userAccount: "",
-  userPassword: "",
+const form = ref<dto_UserLoginRequest>({
+  password: "",
+  username: "",
 } as UserLoginRequest);
 
 const router = useRouter();
@@ -49,16 +45,24 @@ const store = useStore();
  * @param data
  */
 const handleSubmit = async () => {
-  let res  ;
-  if (res.code === 0) {
-    // 登录成功,跳转到主页
-    await store.dispatch("user/getLoginUser");
-    router.push({
-      path: "/",
-      replace: true, //不会占用浏览器历史页面的堆栈,直接替换当前的登录页
-    });
+  let res = await LoginService.postApiV1UserLogin(form.value);
+  console.log("login res = ", res);
+  if (res.code == 200) {
+    message.success("登录成功");
+    // 登录成功, 保存到 vuex 并跳转
+    store
+      .dispatch("user/saveLoginUser", res.data)
+      .then((ans) => {
+        router.push({
+          path: "/",
+          replace: true, //不会占用浏览器历史页面的堆栈,直接替换当前的登录页
+        });
+      })
+      .catch((e) => {
+        message.error("保存用户到本地失败，错误原因：" + e);
+      });
   } else {
-    message.error("登录失败，" + res.message);
+    message.error("登录失败，" + res.msg);
   }
 };
 </script>
