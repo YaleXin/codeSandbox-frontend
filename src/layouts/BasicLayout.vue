@@ -8,7 +8,7 @@
         <router-view />
       </a-layout-content>
       <a-layout-footer class="footer">
-        Online-judge
+        <my-footer/>
       </a-layout-footer>
     </a-layout>
   </div>
@@ -41,8 +41,8 @@
 </style>
 <script>
 import GlobalHeader from "@/components/GlobalHeader";
-
+import MyFooter from "@/components/Footer.vue"
 export default {
-  components: { GlobalHeader },
+  components: { GlobalHeader ,MyFooter},
 };
 </script>

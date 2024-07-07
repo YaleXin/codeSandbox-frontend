@@ -113,7 +113,7 @@ const handleSubmit = async () => {
     password: form.password,
   });
   if (res.code == 200) {
-    message.success("注册成功，即将返回主页");
+    message.success("注册成功，等待管理员审核后即可使用");
     setTimeout(() => {
       // 注册成功,跳转到主页
       router.push({
