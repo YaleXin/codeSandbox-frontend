@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card :style="{ width: '50%' }" title="个人信息" hoverable>
+    <a-card :style="{ width: '40%' }" title="个人信息" hoverable>
       <template #extra>
         <a-link>修改密码</a-link>
       </template>

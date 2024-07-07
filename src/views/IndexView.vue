@@ -32,6 +32,7 @@
           <a-col :span="24">
             <CodeEditor
               :value="form.code"
+              :read-only="false"
               :language="alias2language[form.language]"
               style="min-height: 400px; height: 70vh"
             />
@@ -66,6 +67,7 @@
               <CodeEditor
                 :value="form.inputList[index]"
                 :language="plaintext"
+                :read-only="false"
                 style="height: 20vh"
               />
             </a-col>

@@ -17,6 +17,7 @@ import { defineProps, onMounted, ref, toRaw, watch, withDefaults } from "vue";
 interface Props {
   value: string;
   language?: string;
+  readOnly?: boolean;
 }
 
 /**
@@ -54,7 +55,7 @@ onMounted(() => {
     minimap: {
       enabled: true,
     },
-    readOnly: false,
+    readOnly: props.readOnly,
     theme: "vs-dark",
   });
 
