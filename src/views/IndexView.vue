@@ -44,9 +44,16 @@
           ><a-button type="primary" status="warning" @click="addBtnClk"
             >添加输入</a-button
           >
+          <a-button
+            :loading="executeLoad"
+            type="primary"
+            status="success"
+            @click="executeBtnClk"
+            >执行</a-button
+          >
         </a-divider>
 
-        <a-scrollbar style="height: 200px; overflow: auto">
+        <a-scrollbar style="height: 300px; overflow: auto">
           <a-row
             justify="center"
             align="center"
@@ -72,9 +79,6 @@
         </a-scrollbar>
 
         <a-divider orientation="center"></a-divider>
-        <a-button :loading="executeLoad" type="primary" status="success" @click="executeBtnClk"
-          >执行</a-button
-        >
       </a-col>
     </a-row>
   </div>
@@ -160,7 +164,6 @@ const executeBtnClk = async () => {
   const res = await CodeExecutionService.postApiV1ExecuteCode(form.value);
   executeLoad.value = false;
   if (res.code != 200) {
-
     message.error("请求失败：" + res.msg);
   }
 };
