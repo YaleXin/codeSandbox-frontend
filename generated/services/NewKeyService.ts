@@ -14,15 +14,21 @@ export class NewKeyService {
     /**
      * 生成密钥对
      * 生成密钥对，用于通过程序式提交代码
+     * @param token 登录凭证，登录成功后会返回该凭证
      * @returns any 成功响应
      * @throws ApiError
      */
-    public static postApiV1UserNewKey(): CancelablePromise<(responses_Response & {
+    public static postApiV1UserNewKey(
+token: string,
+): CancelablePromise<(responses_Response & {
 data?: vo_KeyPairVO;
 })> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/user/newKey',
+            headers: {
+                'Token': token,
+            },
             errors: {
                 400: `错误响应`,
                 500: `系统内部错误`,

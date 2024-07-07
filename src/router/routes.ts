@@ -25,6 +25,10 @@ export const routes: Array<RouteRecordRaw> = [
     component: UserIndexView,
     children: [
       {
+        path: "/user/",
+        redirect: "/user/info"
+      },
+      {
         path: "/user/info",
         name: "用户信息",
         component: UserInfo,

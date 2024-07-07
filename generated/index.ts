@@ -14,6 +14,7 @@ export type { dto_UserRegisterRequest } from './models/dto_UserRegisterRequest';
 export type { responses_Response } from './models/responses_Response';
 export type { vo_ExecuteMessageVO } from './models/vo_ExecuteMessageVO';
 export type { vo_KeyPairVO } from './models/vo_KeyPairVO';
+export type { vo_UserDetailVO } from './models/vo_UserDetailVO';
 export type { vo_UserVO } from './models/vo_UserVO';
 
 export { CodeExecutionService } from './services/CodeExecutionService';
@@ -22,3 +23,4 @@ export { LanguagesService } from './services/LanguagesService';
 export { LoginService } from './services/LoginService';
 export { NewKeyService } from './services/NewKeyService';
 export { RegisterService } from './services/RegisterService';
+export { UserInfoService } from './services/UserInfoService';
