@@ -41,17 +41,27 @@
 
         <!--  代码输入组件  结束 -->
 
-        <a-divider orientation="center"
-          ><a-button type="primary" status="warning" @click="addBtnClk"
-            >添加输入</a-button
-          >
-          <a-button
-            :loading="executeLoad"
-            type="primary"
-            status="success"
-            @click="executeBtnClk"
-            >执行</a-button
-          >
+        <a-divider orientation="center">
+          <a-space>
+            <a-button type="primary" @click="addBtnClk">
+              <template #icon>
+                <icon-plus />
+              </template>
+              <template #default>添加输入</template>
+            </a-button>
+
+            <a-button
+              :loading="executeLoad"
+              type="primary"
+              status="success"
+              @click="executeBtnClk"
+            >
+              <template #icon>
+                <icon-play-arrow />
+              </template>
+              <template #default>执行</template>
+            </a-button>
+          </a-space>
         </a-divider>
 
         <a-scrollbar style="height: 300px; overflow: auto">
@@ -71,11 +81,14 @@
                 style="height: 20vh"
               />
             </a-col>
-            <a-col :span="2"
-              ><a-button @click="removeBtnClk(index)" status="danger"
-                >删除</a-button
-              ></a-col
-            >
+            <a-col :span="2">
+              <a-button @click="removeBtnClk(index)" status="danger">
+                <template #icon>
+                  <icon-minus />
+                </template>
+                <template #default>删除</template>
+              </a-button>
+            </a-col>
             <a-divider orientation="center"></a-divider>
           </a-row>
         </a-scrollbar>
@@ -96,7 +109,12 @@ import {
   CodeExecutionService,
 } from "../../generated/";
 import CodeEditor from "@/components/CodeEditor.vue";
-import { IconCodeSquare } from "@arco-design/web-vue/es/icon";
+import {
+  IconCodeSquare,
+  IconPlus,
+  IconMinus,
+  IconPlayArrow
+} from "@arco-design/web-vue/es/icon";
 // import axios from '@/plugins/axios';
 const executeLoad = ref<boolean>(false);
 const form = ref<dto_ExecuteCodeRequest>({

@@ -8,10 +8,18 @@
       @submit="handleSubmit"
     >
       <a-form-item field="username" label="账号">
-        <a-input v-model="form.username" placeholder="请输入账号" />
+        <a-input v-model="form.username" placeholder="请输入账号" >
+          <template #prefix>
+            <icon-user :size="20" />
+          </template>
+        </a-input>
       </a-form-item>
       <a-form-item field="password" tooltip="密码不少于 8 位" label="密码">
-        <a-input-password v-model="form.password" placeholder="请输入密码" />
+        <a-input-password v-model="form.password" placeholder="请输入密码" >
+          <template #prefix>
+            <icon-lock :size="20" />
+          </template>
+        </a-input-password>
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 120px"
@@ -28,6 +36,7 @@ import { dto_UserLoginRequest, LoginService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { IconUser,  IconLock } from "@arco-design/web-vue/es/icon";
 
 /**
  * 表单信息
