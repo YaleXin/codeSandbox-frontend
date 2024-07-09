@@ -52,7 +52,11 @@
   </a-table>
   <a-divider />
   <a-tooltip :content="tooltipContent">
-    <a-button type="primary" @click="addBtnClk" :disabled="btnDisabled">
+    <a-button
+      type="primary"
+      @click="addBtnClk"
+      :disabled="data?.length >= MAX_KEY_LEN || addBtnAntiShake"
+    >
       <template #icon>
         <icon-plus />
       </template>
@@ -64,12 +68,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
-import { KeyListService, NewKeyService } from "../../generated";
+import {
+  KeyListService,
+  NewKeyService,
+  DeleteKeyService,
+} from "../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { IconPlus } from "@arco-design/web-vue/es/icon";
 import { Modal } from "@arco-design/web-vue";
-
 
 const store = useStore();
 const router = useRouter();
@@ -98,7 +105,7 @@ const columns = [
     slotName: "operateOptional",
   },
 ];
-const MAX_KEY_LEN = 5;
+const MAX_KEY_LEN: number = 5;
 const tooltipContent = ref("最多同时持有" + MAX_KEY_LEN + "对Key");
 // 表格数据
 const data = ref([]);
@@ -109,7 +116,9 @@ const secretListShow = ref([]);
 // 控制 public key 是否显示
 const accessListShow = ref([]);
 
-const btnDisabled = ref(true);
+// 防抖控制
+const addBtnAntiShake = ref(false);
+
 const goLogin = () => {
   setTimeout(() => {
     router.push({
@@ -136,10 +145,6 @@ const loadCurrentData = () => {
           data.value = res.data;
           secretListShow.value = new Array(data.value.length).fill(false);
           accessListShow.value = new Array(data.value.length).fill(false);
-
-          if (data.value.length < MAX_KEY_LEN) {
-            btnDisabled.value = false;
-          }
         }
         // 关闭加载遮罩
         dataLoading.value = false;
@@ -151,26 +156,30 @@ const loadCurrentData = () => {
       });
   }
 };
+// 添加按钮回调
 const addBtnClk = () => {
-  // 防抖
-  btnDisabled.value = true;
+  // 防抖开启
+  addBtnAntiShake.value = true;
   NewKeyService.postApiV1UserNewKey(store.state.user.loginUser.token)
     .then((res) => {
-      message.success("增加成功！");
-      data.value.push(res.data);
-      secretListShow.value.push(false);
-      accessListShow.value.push(false);
-      if (data.value.length >= MAX_KEY_LEN) {
-        btnDisabled.value = true;
+      if (res.code == 200) {
+        message.success("增加成功！");
+        data.value.push(res.data);
+        secretListShow.value.push(false);
+        accessListShow.value.push(false);
+        // 防抖结束
+        addBtnAntiShake.value = false;
       } else {
-        btnDisabled.value = false;
+        message.error("增加失败：" + res.msg);
+        goLogin();
       }
     })
     .catch((e) => {
       message.error("增加失败！，原因：" + e);
+      goLogin();
     });
 };
-
+// 删除按钮回调
 const delBtnClk = (rowIndx: number, keyId: number) => {
   Modal.confirm({
     title: "警告",
@@ -178,7 +187,22 @@ const delBtnClk = (rowIndx: number, keyId: number) => {
       "你确定要删除这个输入 key 吗，后续将无法通过该 key 进行程序式调用？",
     onOk: () => {
       console.log("removeBtnClk, rowIndx=", rowIndx, ", keyId = ", keyId);
-      data.value.splice(rowIndx, 1);
+      DeleteKeyService.deleteApiV1UserDelKey(store.state.user.loginUser.token, {
+        id: keyId,
+      })
+        .then((res) => {
+          if (res.code == 200) {
+            data.value.splice(rowIndx, 1);
+            message.success("删除成功");
+          } else {
+            message.error("删除失败：" + res.msg);
+            goLogin();
+          }
+        })
+        .catch((e) => {
+          message.error("删除失败：" + e);
+          goLogin();
+        });
     },
     onCancel: () => {},
   });

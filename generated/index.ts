@@ -7,6 +7,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { dto_DeleteKeyRequest } from './models/dto_DeleteKeyRequest';
 export type { dto_ExecuteCodeRequest } from './models/dto_ExecuteCodeRequest';
 export type { dto_ExecuteCodeResponse } from './models/dto_ExecuteCodeResponse';
 export type { dto_PageExecutionRequest } from './models/dto_PageExecutionRequest';
@@ -21,6 +22,7 @@ export type { vo_UserDetailVO } from './models/vo_UserDetailVO';
 export type { vo_UserVO } from './models/vo_UserVO';
 
 export { CodeExecutionService } from './services/CodeExecutionService';
+export { DeleteKeyService } from './services/DeleteKeyService';
 export { KeyListService } from './services/KeyListService';
 export { LanguagesService } from './services/LanguagesService';
 export { LoginService } from './services/LoginService';
