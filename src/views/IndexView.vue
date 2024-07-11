@@ -33,7 +33,9 @@
             <CodeEditor
               :value="form.code"
               :read-only="false"
+              :editor-name="'codeEditor'"
               :language="alias2language[form.language]"
+              :handle-change="changeCode"
               style="min-height: 400px; height: 70vh"
             />
           </a-col>
@@ -43,12 +45,18 @@
 
         <a-divider orientation="center">
           <a-space>
-            <a-button type="primary" @click="addBtnClk">
-              <template #icon>
-                <icon-plus />
-              </template>
-              <template #default>添加输入</template>
-            </a-button>
+            <a-tooltip :content="tooltipContent">
+              <a-button
+                type="primary"
+                @click="addBtnClk"
+                :disabled="form.inputList?.length >= MAX_INPUT_LEN"
+              >
+                <template #icon>
+                  <icon-plus />
+                </template>
+                <template #default>添加输入</template>
+              </a-button>
+            </a-tooltip>
 
             <a-button
               :loading="executeLoad"
@@ -63,8 +71,11 @@
             </a-button>
           </a-space>
         </a-divider>
-
-        <a-scrollbar style="height: 300px; overflow: auto">
+        <!-- 输入用例滑动组件 -->
+        <a-scrollbar
+          style="height: 300px; overflow: auto"
+          v-show="form.inputList?.length > 0"
+        >
           <a-row
             justify="center"
             align="center"
@@ -78,6 +89,8 @@
                 :value="form.inputList[index]"
                 :language="plaintext"
                 :read-only="false"
+                :editor-name="INPUT_EDITOR_PREFIX + '_' + generateInputId(index)"
+                :handle-change="changeInputContent"
                 style="height: 20vh"
               />
             </a-col>
@@ -102,7 +115,7 @@
 <script setup lang="ts">
 import { Modal } from "@arco-design/web-vue";
 import message from "@arco-design/web-vue/es/message";
-import { defineComponent, ref, onMounted, reactive } from "vue";
+import { defineComponent, ref, onMounted, reactive,nextTick,Reflect } from "vue";
 import {
   LanguagesService,
   dto_ExecuteCodeRequest,
@@ -113,7 +126,7 @@ import {
   IconCodeSquare,
   IconPlus,
   IconMinus,
-  IconPlayArrow
+  IconPlayArrow,
 } from "@arco-design/web-vue/es/icon";
 // import axios from '@/plugins/axios';
 const executeLoad = ref<boolean>(false);
@@ -125,9 +138,39 @@ const form = ref<dto_ExecuteCodeRequest>({
 const alias2language = reactive({});
 const languageList = ref<String>();
 
+const MAX_INPUT_LEN: number = 5;
+const INPUT_EDITOR_PREFIX = "inputEditor";
+const tooltipContent = ref("最多可有" + MAX_INPUT_LEN + "个输入用例");
+
+// 用于标识输入用例 ( changeInputContent 函数通过名字来获取其在 inputList 中的下标，进而更新对应的 inputList[idx] )
+const inputIds = ref({});
+// 生成 uuid
+const guid2: string = () => {
+  const S4: string = () => {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  };
+  return (
+    S4() +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    S4() +
+    S4()
+  );
+};
+const generateInputId = (idx:number) => {
+  const lastInputId = guid2();
+  inputIds.value[lastInputId] = idx;
+  return lastInputId;
+};
+
 const loadData = async () => {
-  //   const response = await axios.get("/api/v1/languages");
-  //   console.log('response.data=', response.data);
   const res = await LanguagesService.getApiV1Languages();
   console.log("res=", res);
   if (res.code != 200) {
@@ -167,25 +210,59 @@ const addBtnClk = () => {
 };
 // 删除输入
 const removeBtnClk = (index) => {
+  message.info("index:" + index);
   Modal.confirm({
     title: "警告",
     content: "你确定要删除这个输入用例吗？",
-    onOk: () => {
+    onOk: async() => {
       console.log("removeBtnClk, index=", index, " ", typeof index);
       form.value.inputList.splice(index, 1);
-      console.log(form.value.inputList?.length);
-    },
+      console.log("after delete inputList : ", form.value.inputList);
+      await nextTick(); // 等待下次 DOM 更新循环结束
+},
     onCancel: () => {},
   });
 };
 
+const checkForm = (): boolean => {
+  // 不能仅包含空白字符
+  if (form.value.code?.trim().length === 0) {
+    message.error("请输入有效的代码！");
+    return false;
+  }
+
+  return true;
+};
 const executeBtnClk = async () => {
+  if (!checkForm()) {
+    return;
+  }
   executeLoad.value = true;
   const res = await CodeExecutionService.postApiV1ExecuteCode(form.value);
   executeLoad.value = false;
   if (res.code != 200) {
     message.error("请求失败：" + res.msg);
   }
+};
+
+// 输入列表发生变化会调用该方法
+const changeInputContent = (editorName: string, value: string) => {
+  console.log("inputIds:", inputIds.value);
+  const uuidStr = editorName.substring(INPUT_EDITOR_PREFIX.length + 1);
+  console.log("editorName = ", editorName, "value = ", value, " uuidStr = ", uuidStr);
+  const changeIdx = inputIds.value[uuidStr];
+  message.info(uuidStr + " test idx: " + changeIdx);
+ Reflect.set(form.value.inputList, changeIdx, value);
+  // form.value.inputList[changeIdx] = value;
+  // let idx: number = getIdxByInputId(deleteId)
+ console.log("inputList = ", form.value.inputList);
+};
+
+// 代码变化会调用该方法
+const changeCode = (editorName: string, value: string) => {
+  form.value.code = value;
+  console.log("editorName = ", editorName, "code = ", form.value.code);
+  
 };
 </script>
 

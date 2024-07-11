@@ -1,9 +1,5 @@
 <template>
-  <div
-    id="code-editor"
-    ref="codeEditorRef"
-    
-  />
+  <div id="code-editor" ref="codeEditorRef" />
   <!--  <a-button @click="fillValue">填充值</a-button>-->
 </template>
 
@@ -17,7 +13,9 @@ import { defineProps, onMounted, ref, toRaw, watch, withDefaults } from "vue";
 interface Props {
   value: string;
   language?: string;
+  editorName?: string;
   readOnly?: boolean;
+  handleChange: (v: string) => void;
 }
 
 /**
@@ -26,6 +24,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   value: () => "",
   language: () => "",
+  editorName: () => "",
+  handleChange: (editorName: string, value: string) => {},
 });
 
 const codeEditorRef = ref();
@@ -61,7 +61,7 @@ onMounted(() => {
 
   // 编辑 监听内容变化
   codeEditor.value.onDidChangeModelContent(() => {
-    // props.handleChange(toRaw(codeEditor.value).getValue());
+    props.handleChange(props.editorName, toRaw(codeEditor.value).getValue());
   });
 });
 </script>
