@@ -7,6 +7,8 @@ import store from "./store";
 import axios from "@/plugins/axios";
 import "bytemd/dist/index.css";
 
+import "@/access";
+
 const app = createApp(App);
 app.use(ArcoVue);
 app.use(store);

@@ -25,7 +25,7 @@
               </a-form-item>
             </a-form>
           </a-col>
-          <a-col :span="12">
+          <!-- <a-col :span="12">
              <a-button
               :loading="executeLoad"
               type="primary"
@@ -37,7 +37,7 @@
               </template>
               <template #default>执行</template>
             </a-button>
-          </a-col>
+          </a-col> -->
 
         </a-row>
         <!--  编程语言下拉组件  结束 -->

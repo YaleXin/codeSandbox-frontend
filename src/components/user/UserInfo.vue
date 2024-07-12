@@ -100,7 +100,7 @@ import {
   UserInfoService,
   vo_UserDetailVO,
   ChangePasswordService,
-} from "../../generated";
+} from "../../../generated";
 import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";

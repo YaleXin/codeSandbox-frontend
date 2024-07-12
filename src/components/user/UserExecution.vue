@@ -108,7 +108,7 @@ import message from "@arco-design/web-vue/es/message";
 import {
   dto_PageExecutionRequest,
   PageExecutionService,
-} from "../../generated";
+} from "../../../generated";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 

@@ -1,13 +1,17 @@
 import { RouteRecordRaw } from "vue-router";
-import UserInfo from "@/components/UserInfo.vue"
-import UserExecution from "@/components/UserExecution.vue"
-import UserKey from "@/components/UserKey.vue"
+import UserInfo from "@/components/user/UserInfo.vue"
+import UserExecution from "@/components/user/UserExecution.vue"
+import UserKey from "@/components/user/UserKey.vue"
 import UserLoginView from "@/views/user/UserLoginView.vue";
 import UserIndexView from "@/views/user/UserIndexView.vue";
 import UserRegisterView from "@/views/user/UserRegisterView.vue"
 import NotFoundView from "@/views/404.vue"
 
+import AdminIndexView from "@/views/admin/AdminIndexView.vue"
+import AdminUsers from "@/components/admin/AdminUsers.vue"
+
 import IndexView from "@/views/IndexView.vue";
+import ACCESS_ENUM from "@/access/accessEnum";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -43,7 +47,10 @@ export const routes: Array<RouteRecordRaw> = [
         name: "程序调用key",
         component: UserKey,
       }
-    ]
+    ],
+    meta: {
+      role: ACCESS_ENUM.NORMAL_USER_ROLE,
+    }
   },
   {
     path: "/user/login",
@@ -61,6 +68,28 @@ export const routes: Array<RouteRecordRaw> = [
       hideInMenu: true
     }
   },
+
+  {
+    path: "/admin",
+    name: "管理员首页",
+    component: AdminIndexView,
+    children: [
+      {
+        path: "/admin/",
+        redirect: "/admin/users"
+      },
+      {
+        path: "/admin/users",
+        name: "用户列表",
+        component: AdminUsers,
+      },
+    ],
+    meta: {
+      role: ACCESS_ENUM.ADMIN_USER_ROLE,
+      hideInMenu: true,
+    }
+  },
+
   {
     path: '/:pathMatch(.*)*',
     component: NotFoundView,

@@ -90,12 +90,17 @@ const store = useStore();
 
 // 展示在菜单的路由数组
 const visibleRoutes = computed(() => {
+  const currentUserRole = store.getters["user/getUser"]?.role;
   return routes.filter((item, index) => {
+    // 如果指明了要隐藏，则不显示
     if (item.meta?.hideInMenu) {
       return false;
     }
-    // todo 根据权限过滤菜单
-
+    // 如果指明了权限
+    if (item.meta?.role) {
+      // 权限值越小，权限越大
+      return currentUserRole <= item.meta?.role;
+    }
     return true;
   });
 });

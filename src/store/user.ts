@@ -1,5 +1,6 @@
 // initial state
 import { StoreOptions } from "vuex";
+import ACCESS_ENUM from "@/access/accessEnum";
 export default {
   namespaced: true,
   getters: {
@@ -19,7 +20,7 @@ export default {
   state: () => ({
     loginUser: {
       id: 0,
-      role: 9999,
+      role: ACCESS_ENUM.NOT_LOGIN_ROLE,
       username: "",
       token: ""
     },
@@ -56,7 +57,7 @@ export default {
       localStorage.removeItem('loginUser');
       state.loginUser = {
         id: 0,
-        role: 9999,
+        role: ACCESS_ENUM.NOT_LOGIN_ROLE,
         username: "",
         token: ""
       };

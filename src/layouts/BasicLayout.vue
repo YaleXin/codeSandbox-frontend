@@ -26,12 +26,12 @@
 
 #basicLayout .content {
   margin-bottom: 16px;
-  padding: 20px;
+  padding: 15px;
 }
 
 #basicLayout .footer {
   background: #efefef;
-  padding: 16px;
+  padding: 2px;
   position: sticky;
   bottom: 0;
   left: 0;
