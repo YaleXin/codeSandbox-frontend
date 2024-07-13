@@ -3,15 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type vo_UserVO = {
-    id?: number;
+export type vo_CaptchaVO = {
     /**
-     * 权限 1:管理员 10: 普通用户
+     * 验证码 base64
      */
-    role?: number;
+    imageBase64?: string;
+    /**
+     * 登录和注册要带上
+     */
     token?: string;
-    /**
-     * 用户名
-     */
-    username?: string;
 };

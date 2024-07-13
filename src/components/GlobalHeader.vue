@@ -39,8 +39,11 @@
         <a-popover title="">
           <a-button>未登录</a-button>
           <template #content>
-            <a-button type="primary" @click="loginClick">登录</a-button>
-            <a-button type="primary" @click="registerClick">注册</a-button>
+            <a-space>
+              <a-button type="primary" @click="loginClick">登录</a-button>
+              <a-button type="primary" @click="registerClick">注册</a-button>
+            </a-space>
+
             {{ store.getters["user/getUser"].username }}
           </template>
         </a-popover>
