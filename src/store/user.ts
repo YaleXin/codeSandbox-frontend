@@ -22,7 +22,8 @@ export default {
       id: 0,
       role: ACCESS_ENUM.NOT_LOGIN_ROLE,
       username: "",
-      token: ""
+      token: "",
+      audit: false
     },
   }),
   // 异步操作在action中进行，再传递到mutation
