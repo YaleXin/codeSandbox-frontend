@@ -171,12 +171,10 @@ const addBtnClk = () => {
         addBtnAntiShake.value = false;
       } else {
         message.error("增加失败：" + res.msg);
-        goLogin();
       }
     })
     .catch((e) => {
       message.error("增加失败！，原因：" + e);
-      goLogin();
     });
 };
 // 删除按钮回调

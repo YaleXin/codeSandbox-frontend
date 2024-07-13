@@ -7,7 +7,7 @@ import message from "@arco-design/web-vue/es/message";
 router.beforeEach(async (to, from, next) => {
   // 当前用户
   const currentUser = store.getters["user/getUser"];
-  console.log('currentUser=', currentUser);
+  // console.log('currentUser=', currentUser);
   // 需要有的权限
   const needAccess = (to.meta?.role as number) ?? ACCESS_ENUM.NOT_LOGIN_ROLE;
   // 判断当前用户是否满足条件

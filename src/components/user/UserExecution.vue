@@ -35,7 +35,9 @@
         type="outline"
         @click="inputListShow[rowIndex] = true"
         status="success"
-        >{{ record.inputList.length }}</a-button
+        >
+        {{ record.inputList?.length }}
+        </a-button
       >
       <a-modal v-model:visible="inputListShow[rowIndex]" width="70%">
         <template #title> 你的输入列表</template>
@@ -70,7 +72,7 @@
         status="warning"
         @click="outputListShow[rowIndex] = true"
       >
-        {{ record.outputList.length }}
+        {{ record.outputList?.length }}
       </a-button>
       <a-modal v-model:visible="outputListShow[rowIndex]" width="70%">
         <template #title> 程序的输出列表</template>
@@ -213,12 +215,6 @@ const loadCurrentData = () => {
       .then((res) => {
         if (res.code != 200) {
           message.error("获取失败:" + res.msg);
-          setTimeout(() => {
-            router.push({
-              path: "/user/login",
-              replace: false,
-            });
-          }, 500);
         } else {
           data.value = res.data.data;
           paginationConfig.value.total = res.data.total;
