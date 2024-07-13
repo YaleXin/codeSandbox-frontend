@@ -24,7 +24,7 @@
       <a-form-item tooltip="点击图片可更换" label="验证码">
         <a-input placeholder="请输入验证码" allow-clear v-model="captchaInput">
           <template #prefix>
-            <icon-user :size="20" />
+            <icon-bulb :size="20" />
           </template>
         </a-input>
       </a-form-item>
@@ -55,7 +55,7 @@ import {
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { IconUser, IconLock } from "@arco-design/web-vue/es/icon";
+import { IconUser, IconLock, IconBulb } from "@arco-design/web-vue/es/icon";
 
 /**
  * 表单信息
