@@ -12,6 +12,7 @@ export type { dto_DeleteKeyRequest } from './models/dto_DeleteKeyRequest';
 export type { dto_ExecuteCodeRequest } from './models/dto_ExecuteCodeRequest';
 export type { dto_ExecuteCodeResponse } from './models/dto_ExecuteCodeResponse';
 export type { dto_PageExecutionRequest } from './models/dto_PageExecutionRequest';
+export type { dto_UserIdRequest } from './models/dto_UserIdRequest';
 export type { dto_UserLoginRequest } from './models/dto_UserLoginRequest';
 export type { dto_UserRegisterRequest } from './models/dto_UserRegisterRequest';
 export type { responses_Response } from './models/responses_Response';

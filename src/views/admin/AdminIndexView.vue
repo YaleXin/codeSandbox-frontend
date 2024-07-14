@@ -13,10 +13,6 @@
           <template #icon><icon-list /></template>
           执行记录
         </a-menu-item>
-        <a-menu-item key="/admin/keys">
-          <template #icon><icon-tool /></template>
-          API key
-        </a-menu-item>
       </a-menu>
     </a-col>
     <a-col :span="20">

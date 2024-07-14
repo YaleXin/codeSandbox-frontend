@@ -5,6 +5,14 @@
 
 export type vo_UserDetailVO = {
     /**
+     * 是否审核通过
+     */
+    audit?: boolean;
+    /**
+     * 是否被禁用
+     */
+    ban?: boolean;
+    /**
      * 注册时间
      */
     createAt?: string;
