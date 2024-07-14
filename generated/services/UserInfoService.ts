@@ -21,7 +21,7 @@ export class UserInfoService {
     public static getApiV1UserInfo(
 token: string,
 ): CancelablePromise<(responses_Response & {
-data?: Array<vo_UserDetailVO>;
+data?: vo_UserDetailVO;
 })> {
         return __request(OpenAPI, {
             method: 'GET',

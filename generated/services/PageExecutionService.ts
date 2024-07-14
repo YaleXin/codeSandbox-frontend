@@ -25,9 +25,9 @@ export class PageExecutionService {
 token: string,
 pageExecutionRequest: dto_PageExecutionRequest,
 ): CancelablePromise<(responses_Response & {
-data?: Array<(vo_PageDataVO & {
+data?: (vo_PageDataVO & {
 data?: Array<vo_ExecutionVO>;
-})>;
+});
 })> {
         return __request(OpenAPI, {
             method: 'POST',

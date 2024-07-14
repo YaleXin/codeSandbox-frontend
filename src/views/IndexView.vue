@@ -3,7 +3,7 @@
     <a-row justify="center">
       <a-col :span="20">
         <!--  编程语言下拉组件  开始 -->
-        <a-row >
+        <a-row>
           <a-col :span="12">
             <a-form :model="form" layout="inline">
               <a-form-item
@@ -38,7 +38,6 @@
               <template #default>执行</template>
             </a-button>
           </a-col> -->
-
         </a-row>
         <!--  编程语言下拉组件  结束 -->
         <!--  代码输入组件  开始 -->
@@ -91,7 +90,6 @@
           v-show="form.inputList?.length > 0"
         >
           <a-row
-          
             align="center"
             :gutter="24"
             v-for="(inputStr, index) in form.inputList"
@@ -133,13 +131,17 @@
           v-show="executionResultList?.length > 0"
         >
           <a-row
-          
             align="center"
             :gutter="24"
             v-for="(executionResult, index) in executionResultList"
             :key="index"
           >
-            <a-col :span="2">输出{{ index + 1 }}</a-col>
+            <a-col :span="2"
+              ><span
+                :style="{ color: getStatusColor(executionResult.exitCode) }"
+                >输出{{ index + 1 }}</span
+              ></a-col
+            >
             <a-col :span="18">
               <CodeEditor
                 :value="executionResult.message"
@@ -167,10 +169,22 @@
                   title="额外执行信息"
                   hoverable
                 >
-                
                   <a-row>
                     <a-col :span="8">执行状态</a-col>
-                    <a-col :span="16">{{ executionResult.exitCode }}</a-col>
+                    <a-col :span="16">
+                      <a-tag :color="getStatusColor(executionResult.exitCode)">
+                        <template #icon>
+                          <icon-check-circle-fill
+                            v-if="
+                              executionResult.exitCode ==
+                              GLOBAL.CODE_RUN_STATUS.EXIT_CODE_OK
+                            "
+                          />
+                          <icon-close-circle-fill v-else />
+                        </template>
+                        {{ getStatusText(executionResult.exitCode) }}
+                      </a-tag>
+                    </a-col>
                   </a-row>
                   <a-divider />
 
@@ -182,17 +196,38 @@
 
                   <a-row>
                     <a-col :span="8">内存消耗</a-col>
-                    <a-col :span="16">{{ executionResult.memoryCost }}</a-col>
+                    <a-col :span="16">
+                      <!-- 使用v-if 是为了强制重新渲染，产生对应的动画 -->
+                      <a-statistic
+                        v-if="outputListInfoShow[index]"
+                        :animation="true"
+                        :value="executionResult.memoryCost / 1024"
+                        :animation-duration="1000"
+                        class="my-statistic"
+                        :value-style="{ fontSize: '14px' }"
+                      >
+                        <template #suffix> KB </template>
+                      </a-statistic>
+                    </a-col>
                   </a-row>
                   <a-divider />
 
                   <a-row>
                     <a-col :span="8">时间消耗</a-col>
-                    <a-col :span="16">{{ executionResult.timeCost }}</a-col>
+                    <a-col :span="16">
+                      <a-statistic
+                        v-if="outputListInfoShow[index]"
+                        :animation="true"
+                        :value="executionResult.timeCost"
+                        :animation-duration="1000"
+                        class="my-statistic"
+                        :value-style="{ fontSize: '14px' }"
+                      >
+                        <template #suffix> ms </template>
+                      </a-statistic>
+                    </a-col>
                   </a-row>
                   <a-divider />
-
-
                 </a-card>
               </a-modal>
             </a-col>
@@ -224,7 +259,11 @@ import {
   IconMinus,
   IconPlayArrow,
   IconInfoCircleFill,
+  IconCheckCircleFill,
+  IconCloseCircleFill,
 } from "@arco-design/web-vue/es/icon";
+import GLOBAL from "@/constants/globalConstants";
+
 // import axios from '@/plugins/axios';
 const executeLoad = ref<boolean>(false);
 const form = ref<dto_ExecuteCodeRequest>({
@@ -235,13 +274,34 @@ const form = ref<dto_ExecuteCodeRequest>({
 
 // 程序执行结果
 const executionResultList = ref([
-  // {
-  //   errorMessage: "11143",
-  //   exitCode: 1,
-  //   memoryCost: 12,
-  //   message: "string",
-  //   timeCost: 11,
-  // },
+  {
+    exitCode: 0,
+    message: "11\n",
+    errorMessage: "",
+    timeCost: 311,
+    memoryCost: 0,
+  },
+  {
+    exitCode: 1,
+    message: "",
+    errorMessage: "COMPILE ERROR",
+    timeCost: 106,
+    memoryCost: 4096,
+  },
+  {
+    exitCode: 2,
+    message: "",
+    errorMessage: "TIME OUT",
+    timeCost: 5120,
+    memoryCost: 2916352,
+  },
+  {
+    exitCode: 3,
+    message: "",
+    errorMessage: "RUNTIME ERROR",
+    timeCost: 520,
+    memoryCost: 0,
+  },
 ]);
 const alias2language = reactive({});
 const languageList = ref<String>();
@@ -354,7 +414,7 @@ const executeBtnClk = async () => {
   if (!checkForm()) {
     return;
   }
-  executionResultList.value = []
+  executionResultList.value = [];
   console.log(form.value);
   executeLoad.value = true;
   const res = await CodeExecutionService.postApiV1ExecuteCode(
@@ -398,6 +458,23 @@ const goLogin = () => {
       replace: false,
     });
   }, 500);
+};
+// 用于转换执行状态的信息
+const statusText = ["正常退出", "编译失败", "超时退出", "运行出错", "其他错误"];
+const statusColor = ["green", "magenta", "orange", "red", "gray"];
+const getStatusText = (code: number) => {
+  if (code >= statusText.length) {
+    return "未知错误";
+  } else {
+    return statusText[code];
+  }
+};
+const getStatusColor = (code: number) => {
+  if (code >= statusText.length) {
+    return "gray";
+  } else {
+    return statusColor[code];
+  }
 };
 </script>
 

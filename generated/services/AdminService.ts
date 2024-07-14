@@ -27,9 +27,7 @@ export class AdminService {
 token: string,
 pageExecutionRequest: dto_UserIdRequest,
 ): CancelablePromise<(responses_Response & {
-data?: (vo_PageDataVO & {
 data?: boolean;
-});
 })> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -57,9 +55,7 @@ data?: boolean;
 token: string,
 pageExecutionRequest: dto_UserIdRequest,
 ): CancelablePromise<(responses_Response & {
-data?: (vo_PageDataVO & {
 data?: boolean;
-});
 })> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -87,9 +83,7 @@ data?: boolean;
 token: string,
 pageExecutionRequest: dto_UserIdRequest,
 ): CancelablePromise<(responses_Response & {
-data?: (vo_PageDataVO & {
 data?: boolean;
-});
 })> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -117,9 +111,9 @@ data?: boolean;
 token: string,
 pageExecutionRequest: dto_PageExecutionRequest,
 ): CancelablePromise<(responses_Response & {
-data?: Array<(vo_PageDataVO & {
+data?: (vo_PageDataVO & {
 data?: Array<vo_AdminExecutionVO>;
-})>;
+});
 })> {
         return __request(OpenAPI, {
             method: 'POST',

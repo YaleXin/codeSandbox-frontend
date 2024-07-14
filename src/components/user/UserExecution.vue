@@ -35,10 +35,9 @@
         type="outline"
         @click="inputListShow[rowIndex] = true"
         status="success"
-        >
-        {{ record.inputList?.length }}
-        </a-button
       >
+        {{ record.inputList?.length }}
+      </a-button>
       <a-modal v-model:visible="inputListShow[rowIndex]" width="70%">
         <template #title> 你的输入列表</template>
 
@@ -100,6 +99,78 @@
         </a-scrollbar>
       </a-modal>
     </template>
+
+    <!-- 内存消耗 -->
+    <template #memoryCostOptional="{ record }">
+      <a-statistic
+        :animation="true"
+        :value="record.maxMemoryCost / 1024"
+        :animation-duration="1000"
+        class="my-statistic"
+        :value-style="{ fontSize: '14px' }"
+      >
+        <template #suffix> KB </template>
+      </a-statistic>
+    </template>
+    <!-- 时间消耗 -->
+    <template #timeCostOptional="{ record }">
+      <a-statistic
+        :animation="true"
+        :value="record.maxTimeCost"
+        :animation-duration="1000"
+        class="my-statistic"
+        :value-style="{ fontSize: '14px' }"
+      >
+        <template #suffix> ms </template>
+      </a-statistic>
+    </template>
+    <!-- 执行状态 -->
+    <template #statusOptional="{ record }">
+      <a-tag
+        color="green"
+        v-if="record.status == GLOBAL.EXECUTION_STATUS.NORMAL_EXIT"
+      >
+        <template #icon>
+          <icon-check-circle-fill />
+        </template>
+        正常结束
+      </a-tag>
+      <a-tag
+        color="red"
+        v-else-if="record.status == GLOBAL.EXECUTION_STATUS.ERROR_EXIT"
+      >
+        <template #icon>
+          <icon-close-circle-fill />
+        </template>
+        异常结束
+      </a-tag>
+
+       <a-tag
+        color="gray"
+        v-else-if="record.status == GLOBAL.EXECUTION_STATUS.RUNNING"
+      >
+        <template #icon>
+         <icon-info-circle-fill />
+        </template>
+        监测异常
+      </a-tag>
+
+      
+       <a-tag
+        color="magenta"
+        v-else
+      >
+        <template #icon>
+         <icon-exclamation />
+        </template>
+        未知情况
+      </a-tag>
+      
+    </template>
+    <!-- 时间戳 -->
+    <template #createAtOptional="{ record }">
+      {{ goTimeStrFormat(record.createAt)}}
+    </template>
   </a-table>
 </template>
 
@@ -113,6 +184,8 @@ import {
 } from "../../../generated";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import GLOBAL from "@/constants/globalConstants";
+import { IconCheckCircleFill,IconCloseCircleFill ,IconInfoCircleFill, IconExclamation} from "@arco-design/web-vue/es/icon";
 
 const store = useStore();
 const router = useRouter();
@@ -140,11 +213,11 @@ const columns = [
   },
   {
     title: "内存消耗",
-    dataIndex: "maxMemoryCost",
+    slotName: "memoryCostOptional",
   },
   {
     title: "时间消耗",
-    dataIndex: "maxTimeCost",
+    slotName: "timeCostOptional",
   },
   {
     title: "KeyId",
@@ -152,11 +225,11 @@ const columns = [
   },
   {
     title: "执行状态",
-    dataIndex: "status",
+    slotName: "statusOptional",
   },
   {
     title: "执行时间戳",
-    dataIndex: "createAt",
+    slotName: "createAtOptional",
   },
 ];
 // 表格数据
@@ -235,6 +308,10 @@ const loadCurrentData = () => {
 onMounted(() => {
   loadCurrentData();
 });
+// 格式化go的time字符串（2024-07-13T18:44:49+08:00）
+const goTimeStrFormat:string = (timeStr:string)=>{
+  return (new Date(timeStr)).toISOString().substring(0, 19).replace('T', ' ');
+}
 </script>
 
 <style>

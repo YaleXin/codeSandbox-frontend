@@ -74,22 +74,47 @@
       <a-divider />
       <a-row>
         <a-col :span="8">身份</a-col>
-        <a-col :span="16">{{ info.role }}</a-col>
+        <a-col :span="16">
+          <a-tag
+            :color="info.role == ACCESS_ENUM.ADMIN_USER_ROLE ? 'red' : 'blue'"
+          >
+            {{
+              info.role == ACCESS_ENUM.ADMIN_USER_ROLE ? "管理员" : "普通用户"
+            }}
+          </a-tag>
+        </a-col>
       </a-row>
       <a-divider />
       <a-row>
         <a-col :span="8">注册时间</a-col>
-        <a-col :span="16">{{ info.createAt }}</a-col>
+        <a-col :span="16">{{ goTimeStrFormat(info.createAt) }}</a-col>
       </a-row>
       <a-divider />
       <a-row>
         <a-col :span="8">每月额度</a-col>
-        <a-col :span="16">{{ info.monthLimit }}</a-col>
+        <a-col :span="16">
+          <a-statistic
+            :animation="true"
+            :value="info.monthLimit"
+            :animation-duration="1000"
+            class="my-statistic"
+            :value-style="{ fontSize: '16px' }"
+          >
+          </a-statistic>
+        </a-col>
       </a-row>
       <a-divider />
       <a-row>
         <a-col :span="8">当月已用</a-col>
-        <a-col :span="16">{{ info.currentUsage }}</a-col>
+        <a-col :span="16">
+          <a-statistic
+            :animation="true"
+            :value-style="{ color: 'red', fontSize: '16px' }"
+            :value="info.currentUsage"
+            :animation-duration="1000"
+          >
+          </a-statistic>
+        </a-col>
       </a-row>
     </a-card>
   </div>
@@ -106,7 +131,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import message from "@arco-design/web-vue/es/message";
 import { IconLock } from "@arco-design/web-vue/es/icon";
-
+import ACCESS_ENUM from "@/access/accessEnum";
 const changePwdVisible = ref(false);
 
 const store = useStore();
@@ -122,7 +147,7 @@ const form = ref({
 });
 
 const info = ref<vo_UserDetailVO>({
-  createAt: "",
+  createAt: "2024-07-13T00:00:00+08:00",
   currentUsage: 0,
   email: "",
   id: 0,
@@ -192,7 +217,7 @@ const handleSubmit = async () => {
   if (!checkForm()) {
     return;
   }
-  console.log("form=",form);
+  console.log("form=", form);
   ChangePasswordService.putApiV1UserChangePwd(
     store.state.user.loginUser.token,
     {
@@ -223,7 +248,13 @@ const handleSubmit = async () => {
       console.log("putApiV1UserChangePwd fail:" + e);
     });
 };
+// 格式化go的time字符串（2024-07-13T18:44:49+08:00）
+const goTimeStrFormat:string = (timeStr:string)=>{
+  console.log(timeStr);
+  const dateObj = new Date(timeStr);
+  return dateObj.toISOString().substring(0, 19).replace('T', ' ');
+}
 </script>
 
-<style>
+<style scoped>
 </style>
