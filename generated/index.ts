@@ -15,6 +15,7 @@ export type { dto_PageExecutionRequest } from './models/dto_PageExecutionRequest
 export type { dto_UserLoginRequest } from './models/dto_UserLoginRequest';
 export type { dto_UserRegisterRequest } from './models/dto_UserRegisterRequest';
 export type { responses_Response } from './models/responses_Response';
+export type { vo_AdminExecutionVO } from './models/vo_AdminExecutionVO';
 export type { vo_CaptchaVO } from './models/vo_CaptchaVO';
 export type { vo_ExecuteMessageVO } from './models/vo_ExecuteMessageVO';
 export type { vo_ExecutionVO } from './models/vo_ExecutionVO';
@@ -23,6 +24,7 @@ export type { vo_PageDataVO } from './models/vo_PageDataVO';
 export type { vo_UserDetailVO } from './models/vo_UserDetailVO';
 export type { vo_UserVO } from './models/vo_UserVO';
 
+export { AdminService } from './services/AdminService';
 export { CaptchaService } from './services/CaptchaService';
 export { ChangePasswordService } from './services/ChangePasswordService';
 export { CodeExecutionService } from './services/CodeExecutionService';

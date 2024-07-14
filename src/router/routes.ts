@@ -9,6 +9,7 @@ import NotFoundView from "@/views/404.vue"
 
 import AdminIndexView from "@/views/admin/AdminIndexView.vue"
 import AdminUsers from "@/components/admin/AdminUsers.vue"
+import AdminExecutions from "@/components/admin/AdminExecutions.vue"
 
 import IndexView from "@/views/IndexView.vue";
 import ACCESS_ENUM from "@/access/accessEnum";
@@ -82,6 +83,11 @@ export const routes: Array<RouteRecordRaw> = [
         path: "/admin/users",
         name: "用户列表",
         component: AdminUsers,
+      },
+      {
+        path: "/admin/executions",
+        name: "用户执行记录",
+        component: AdminExecutions,
       },
     ],
     meta: {
