@@ -15,6 +15,7 @@ interface Props {
   language?: string;
   editorName?: string;
   readOnly?: boolean;
+  theme?:string;
   handleChange: (v: string) => void;
 }
 
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
   value: () => "",
   language: () => "",
   editorName: () => "",
+  theme:() => "vs-dark",
   handleChange: (editorName: string, value: string) => {},
 });
 
@@ -43,20 +45,40 @@ watch(
   }
 );
 
+watch(
+  () => props.theme,
+  () => {
+    monaco.editor.setTheme(props.theme);
+  }
+);
+
 onMounted(() => {
   if (!codeEditorRef.value) {
     return;
   }
   codeEditor.value = monaco.editor.create(codeEditorRef.value, {
+    // 值由父组件设置
     value: props.value,
+    // 编程语言由父组件设置
     language: props.language,
+    // 是否只读由父组件设置
+    readOnly: props.readOnly,
+    // 主题
+    theme: props.theme,
     automaticLayout: true,
     colorDecorators: true,
+    // 启用预览图
     minimap: {
       enabled: true,
     },
-    readOnly: props.readOnly,
-    theme: "vs-dark",
+    // 鼠标可以缩放字体
+    mouseWheelZoom: true,
+    // 代码可折叠
+    folding: true,
+    // 光标移动动画
+    cursorSmoothCaretAnimation: "on",
+    // 字体大小
+    fontSize: 20,
   });
 
   // 编辑 监听内容变化

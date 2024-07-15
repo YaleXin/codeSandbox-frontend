@@ -7,6 +7,7 @@
   >
     <a-col flex="auto">
       <a-menu
+      :auto-scroll-into-view="true"
         mode="horizontal"
         :selected-keys="selectedKeys"
         @menu-item-click="doMenuClick"
@@ -17,7 +18,7 @@
           disabled
         >
           <div class="title-bar">
-            <img class="logo" src="../assets/logo.png" />
+            <img class="logo" src="../assets/logo.svg" />
             <div class="title">CodeSandbox</div>
           </div>
         </a-menu-item>
@@ -113,7 +114,13 @@ const selectedKeys = ref(["/"]);
 
 // 路由跳转后,更新选中的菜单项
 router.afterEach((to, from, failure) => {
-  selectedKeys.value = [to.path];
+  // console.log('to.path=',to.path);
+  const parts = to.path.split("/");
+  if (parts.length >= 1) {
+    selectedKeys.value = ["/" + parts[1]];
+  } else {
+    selectedKeys.value = [to.path];
+  }
 });
 
 // setTimeout(() => {

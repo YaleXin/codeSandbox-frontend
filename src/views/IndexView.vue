@@ -2,20 +2,16 @@
   <div class="index-class">
     <a-row justify="center">
       <a-col :span="20">
-        <!--  编程语言下拉组件  开始 -->
         <a-row>
+          <!--  编程语言下拉组件  开始 -->
           <a-col :span="12">
             <a-form :model="form" layout="inline">
               <a-form-item
                 field="language"
                 label="编程语言"
-                style="min-width: 240px"
+                style="min-width: 150px"
               >
-                <a-select
-                  v-model="form.language"
-                  :style="{ width: '320px' }"
-                  placeholder="选择编程语言"
-                >
+                <a-select v-model="form.language" placeholder="选择编程语言">
                   <a-option
                     v-for="(language, index) of languageList"
                     :key="index"
@@ -25,6 +21,20 @@
               </a-form-item>
             </a-form>
           </a-col>
+          <!--  编程语言下拉组件  结束 -->
+          <!--  主题下拉组件  开始 -->
+          <a-col :span="12">
+            <a-form layout="inline">
+              <a-form-item label="主题" style="min-width: 150px">
+                <a-select @change="themeChange" v-model="themeSelect" placeholder="选择主题">
+                  <a-option v-for="(theme, index) of themeList" :key="index">{{
+                    theme
+                  }}</a-option>
+                </a-select>
+              </a-form-item>
+            </a-form>
+          </a-col>
+          <!--  主题下拉组件  结束 -->
           <!-- <a-col :span="12">
              <a-button
               :loading="executeLoad"
@@ -39,7 +49,7 @@
             </a-button>
           </a-col> -->
         </a-row>
-        <!--  编程语言下拉组件  结束 -->
+
         <!--  代码输入组件  开始 -->
         <a-row justify="center">
           <a-col :span="24">
@@ -49,6 +59,7 @@
               :editor-name="'codeEditor'"
               :language="alias2language[form.language]"
               :handle-change="changeCode"
+              :theme="themeSelect"
               style="min-height: 400px; height: 70vh"
             />
           </a-col>
@@ -271,37 +282,40 @@ const form = ref<dto_ExecuteCodeRequest>({
   code: "",
   inputList: [],
 });
+// 默认主题
+const themeSelect = ref("vs-dark");
+const themeList = ref(["vs-dark", "hc-black", "vs", "hc-light"]);
 
 // 程序执行结果
 const executionResultList = ref([
-  {
-    exitCode: 0,
-    message: "11\n",
-    errorMessage: "",
-    timeCost: 311,
-    memoryCost: 0,
-  },
-  {
-    exitCode: 1,
-    message: "",
-    errorMessage: "COMPILE ERROR",
-    timeCost: 106,
-    memoryCost: 4096,
-  },
-  {
-    exitCode: 2,
-    message: "",
-    errorMessage: "TIME OUT",
-    timeCost: 5120,
-    memoryCost: 2916352,
-  },
-  {
-    exitCode: 3,
-    message: "",
-    errorMessage: "RUNTIME ERROR",
-    timeCost: 520,
-    memoryCost: 0,
-  },
+  // {
+  //   exitCode: 0,
+  //   message: "11\n",
+  //   errorMessage: "",
+  //   timeCost: 311,
+  //   memoryCost: 0,
+  // },
+  // {
+  //   exitCode: 1,
+  //   message: "",
+  //   errorMessage: "COMPILE ERROR",
+  //   timeCost: 106,
+  //   memoryCost: 4096,
+  // },
+  // {
+  //   exitCode: 2,
+  //   message: "",
+  //   errorMessage: "TIME OUT",
+  //   timeCost: 5120,
+  //   memoryCost: 2916352,
+  // },
+  // {
+  //   exitCode: 3,
+  //   message: "",
+  //   errorMessage: "RUNTIME ERROR",
+  //   timeCost: 520,
+  //   memoryCost: 0,
+  // },
 ]);
 const alias2language = reactive({});
 const languageList = ref<String>();
@@ -476,6 +490,10 @@ const getStatusColor = (code: number) => {
     return statusColor[code];
   }
 };
+
+const themeChange = (newTheme)=>{
+  message.info(themeSelect.value)
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
