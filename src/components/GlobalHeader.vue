@@ -5,9 +5,9 @@
     align="center"
     :wrap="false"
   >
-    <a-col :span="20">
+    <a-col  flex="auto">
       <a-menu
-      :auto-scroll-into-view="true"
+        :auto-scroll-into-view="true"
         mode="horizontal"
         :selected-keys="selectedKeys"
         @menu-item-click="doMenuClick"
@@ -23,17 +23,17 @@
           </div>
         </a-menu-item>
         <a-menu-item v-for="item in visibleRoutes" :key="item.path">
-           <template #icon>
-            <icon-home v-if="item.name=='首页'"/>
-            <icon-user  v-else-if="item.name=='用户首页'"/>
-            </template>
+          <template #icon>
+            <icon-home v-if="item.name == '首页'" />
+            <icon-user v-else-if="item.name == '用户首页'" />
+          </template>
           {{ item.name }}
         </a-menu-item>
         <!-- <a-menu-item key="/index">index</a-menu-item>
         <a-menu-item key="/user/info">info</a-menu-item> -->
       </a-menu>
     </a-col>
-    <!-- <a-col  :span="4">
+    <a-col flex="100px">
       <div v-if="store.getters['user/getUser']?.id > 0">
         <a-popover title="">
           <a-button>{{ store.getters["user/getUser"]?.username }}</a-button>
@@ -48,14 +48,14 @@
           <template #content>
             <a-space>
               <a-button type="primary" @click="loginClick">登录</a-button>
-              <a-button type="primary" @click="registerClick">注册</a-button>
+              <a-button type="primary" status="warning" @click="registerClick">注册</a-button>
             </a-space>
 
             {{ store.getters["user/getUser"].username }}
           </template>
         </a-popover>
       </div>
-    </a-col> -->
+    </a-col>
   </a-row>
 </template>
 
@@ -92,7 +92,6 @@ const logoutClick = async () => {
       });
     })
     .catch((e) => {
-      message.error("注销失败");
     });
 };
 const router = useRouter();
@@ -128,13 +127,6 @@ router.afterEach((to, from, failure) => {
     selectedKeys.value = [to.path];
   }
 });
-
-// setTimeout(() => {
-//   store.dispatch("user/getLoginUser", {
-//     userName: "管理员",
-//     userRole: "ACCESS_ENUM.ADMIN",
-//   });
-// }, 3000);
 
 const doMenuClick = (key: string) => {
   router.push({
