@@ -5,7 +5,7 @@
     :columns="columns"
     :data="data"
     :pagination="false"
-    :page-position="bottom"
+    page-position="bottom"
   >
     <template #accessOptional="{ record, rowIndex }">
       <a-button
@@ -72,6 +72,7 @@ import {
   KeyListService,
   NewKeyService,
   DeleteKeyService,
+  vo_KeyPairVO
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
@@ -108,16 +109,16 @@ const columns = [
 const MAX_KEY_LEN: number = 5;
 const tooltipContent = ref("最多同时持有" + MAX_KEY_LEN + "对Key");
 // 表格数据
-const data = ref([]);
+const data = ref<vo_KeyPairVO[]>([]);
 
 // 控制 secret key 是否显示
-const secretListShow = ref([]);
+const secretListShow = ref<boolean[]>([]);
 
 // 控制 public key 是否显示
-const accessListShow = ref([]);
+const accessListShow =  ref<boolean[]>([]);
 
 // 防抖控制
-const addBtnAntiShake = ref(false);
+const addBtnAntiShake = ref<boolean>(false);
 
 const goLogin = () => {
   setTimeout(() => {

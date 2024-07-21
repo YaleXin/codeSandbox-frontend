@@ -99,6 +99,9 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     component: NotFoundView,
+    meta: {
+      hideInMenu: true,
+    }
   }
 
 ];

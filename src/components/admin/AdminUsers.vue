@@ -5,7 +5,7 @@
     :columns="columns"
     :data="data"
     :pagination="paginationConfig"
-    :page-position="bottom"
+    page-position="bottom"
   >
     <!-- 角色要自定义展示 -->
     <template #roleOptional="{ record }">
@@ -50,7 +50,7 @@
 import CodeEditor from "@/components/CodeEditor.vue";
 import { ref, onMounted } from "vue";
 import message from "@arco-design/web-vue/es/message";
-import { dto_PageExecutionRequest, AdminService } from "../../../generated";
+import { dto_PageExecutionRequest, AdminService,vo_UserDetailVO } from "../../../generated";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import ACCESS_ENUM from "@/access/accessEnum";
@@ -96,18 +96,18 @@ const columns = [
   },
 ];
 // 表格数据
-const data = ref([]);
+const data = ref<vo_UserDetailVO[]>([]);
 // 控制代码是否显示
-const codeListShow = ref([]);
+const codeListShow =  ref<boolean[]>([]);
 // 控制输入用例是否显示
-const inputListShow = ref([]);
+const inputListShow =  ref<boolean[]>([]);
 // 控制输出用例是否显示
-const outputListShow = ref([]);
-const handlePageChange = (pageNo, pageSize) => {
+const outputListShow =  ref<boolean[]>([]);
+const handlePageChange = (pageNo:number, pageSize:number) => {
   paginationConfig.value.current = pageNo;
   loadCurrentData();
 };
-const handlePageSizeChange = (pageSize) => {
+const handlePageSizeChange = (pageSize:number) => {
   paginationConfig.value.pageSize = pageSize;
   loadCurrentData();
 };

@@ -4,8 +4,7 @@ import ArcoVue from "@arco-design/web-vue";
 import "@arco-design/web-vue/dist/arco.css";
 import router from "./router";
 import store from "./store";
-import axios from "@/plugins/axios";
-import "bytemd/dist/index.css";
+// import axios from "@/plugins/axios";
 
 import "@/access";
 
@@ -13,5 +12,5 @@ const app = createApp(App);
 app.use(ArcoVue);
 app.use(store);
 app.use(router);
-app.config.globalProperties.$axios = axios;
+// app.config.globalProperties.$axios = axios;
 app.mount("#app");

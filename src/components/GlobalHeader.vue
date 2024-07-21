@@ -5,7 +5,7 @@
     align="center"
     :wrap="false"
   >
-    <a-col flex="auto">
+    <a-col :span="20">
       <a-menu
       :auto-scroll-into-view="true"
         mode="horizontal"
@@ -23,11 +23,17 @@
           </div>
         </a-menu-item>
         <a-menu-item v-for="item in visibleRoutes" :key="item.path">
+           <template #icon>
+            <icon-home v-if="item.name=='首页'"/>
+            <icon-user  v-else-if="item.name=='用户首页'"/>
+            </template>
           {{ item.name }}
         </a-menu-item>
+        <!-- <a-menu-item key="/index">index</a-menu-item>
+        <a-menu-item key="/user/info">info</a-menu-item> -->
       </a-menu>
     </a-col>
-    <a-col flex="100px">
+    <!-- <a-col  :span="4">
       <div v-if="store.getters['user/getUser']?.id > 0">
         <a-popover title="">
           <a-button>{{ store.getters["user/getUser"]?.username }}</a-button>
@@ -49,7 +55,7 @@
           </template>
         </a-popover>
       </div>
-    </a-col>
+    </a-col> -->
   </a-row>
 </template>
 
@@ -58,7 +64,7 @@ import { routes } from "../router/routes";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-
+import { IconUser, IconHome } from "@arco-design/web-vue/es/icon";
 import { UserControllerService } from "../../generated/user";
 
 const loginClick = async () => {

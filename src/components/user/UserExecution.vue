@@ -5,7 +5,7 @@
     :columns="columns"
     :data="data"
     :pagination="paginationConfig"
-    :page-position="bottom"
+    page-position="bottom"
   >
     <!-- 代码要单独弹出展示 -->
     <template #codeOptional="{ record, rowIndex }">
@@ -20,6 +20,7 @@
         <a-row justify="center">
           <a-col :span="24">
             <CodeEditor
+            :handle-change="changeCode"
               :value="record.code"
               :read-only="true"
               :language="record.language.split('-')[0].toLowerCase()"
@@ -52,6 +53,7 @@
             <a-col :span="2">输入{{ index + 1 }}</a-col>
             <a-col :span="18">
               <CodeEditor
+              :handle-change="changeCode"
                 :value="inputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -87,6 +89,7 @@
             <a-col :span="2">输出{{ index + 1 }}</a-col>
             <a-col :span="18">
               <CodeEditor
+              :handle-change="changeCode"
                 :value="outputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -190,6 +193,7 @@ import { IconCheckCircleFill,IconCloseCircleFill ,IconInfoCircleFill, IconExclam
 const store = useStore();
 const router = useRouter();
 
+const plaintext = ref<string>("plaintext");
 const columns = [
   {
     title: "id",
@@ -235,16 +239,16 @@ const columns = [
 // 表格数据
 const data = ref([]);
 // 控制代码是否显示
-const codeListShow = ref([]);
+const codeListShow = ref<boolean[]>([]);
 // 控制输入用例是否显示
-const inputListShow = ref([]);
+const inputListShow = ref<boolean[]>([]);
 // 控制输出用例是否显示
-const outputListShow = ref([]);
-const handlePageChange = (pageNo, pageSize) => {
+const outputListShow = ref<boolean[]>([]);
+const handlePageChange = (pageNo:number, pageSize:number) => {
   paginationConfig.value.current = pageNo;
   loadCurrentData();
 };
-const handlePageSizeChange = (pageSize) => {
+const handlePageSizeChange = (pageSize:number) => {
   paginationConfig.value.pageSize = pageSize;
   loadCurrentData();
 };
@@ -309,9 +313,11 @@ onMounted(() => {
   loadCurrentData();
 });
 // 格式化go的time字符串（2024-07-13T18:44:49+08:00）
-const goTimeStrFormat:string = (timeStr:string)=>{
+const goTimeStrFormat = (timeStr:string):string=>{
   return (new Date(timeStr)).toISOString().substring(0, 19).replace('T', ' ');
 }
+const changeCode = (editorName: string, value: string) => {
+};
 </script>
 
 <style>

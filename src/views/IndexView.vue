@@ -24,9 +24,13 @@
           <!--  编程语言下拉组件  结束 -->
           <!--  主题下拉组件  开始 -->
           <a-col :span="12">
-            <a-form layout="inline">
+            <a-form :model="languageFrom" layout="inline">
               <a-form-item label="主题" style="min-width: 150px">
-                <a-select @change="themeChange" v-model="themeSelect" placeholder="选择主题">
+                <a-select
+                  @change="themeChange"
+                  v-model="languageFrom.themeSelect"
+                  placeholder="选择主题"
+                >
                   <a-option v-for="(theme, index) of themeList" :key="index">{{
                     theme
                   }}</a-option>
@@ -57,9 +61,9 @@
               :value="form.code"
               :read-only="false"
               :editor-name="'codeEditor'"
-              :language="alias2language[form.language]"
+              :language="alias2language[form.language ?? '']"
               :handle-change="changeCode"
-              :theme="themeSelect"
+              :theme="languageFrom.themeSelect"
               style="min-height: 400px; height: 70vh"
             />
           </a-col>
@@ -73,7 +77,7 @@
               <a-button
                 type="primary"
                 @click="addBtnClk"
-                :disabled="form.inputList?.length >= MAX_INPUT_LEN"
+                :disabled="(form.inputList?.length ?? 0) >= MAX_INPUT_LEN"
               >
                 <template #icon>
                   <icon-plus />
@@ -98,7 +102,7 @@
         <!-- 输入用例滑动组件 -->
         <a-scrollbar
           style="height: 300px; overflow: auto"
-          v-show="form.inputList?.length > 0"
+          v-show="(form.inputList?.length ?? 0) > 0"
         >
           <a-row
             align="center"
@@ -109,7 +113,7 @@
             <a-col :span="2">输入{{ index + 1 }}</a-col>
             <a-col :span="18">
               <CodeEditor
-                :value="form.inputList[index]"
+                :value="form?.inputList?.[index] ?? ''"
                 :language="plaintext"
                 :read-only="false"
                 :editor-name="
@@ -133,7 +137,7 @@
 
         <a-divider
           orientation="center"
-          v-show="form.inputList?.length > 0"
+          v-show="(form.inputList?.length ?? 0) > 0"
         ></a-divider>
 
         <!-- 程序输出组件 开始 -->
@@ -149,13 +153,15 @@
           >
             <a-col :span="2"
               ><span
-                :style="{ color: getStatusColor(executionResult.exitCode) }"
+                :style="{
+                  color: getStatusColor(executionResult?.exitCode ?? 0),
+                }"
                 >输出{{ index + 1 }}</span
               ></a-col
             >
             <a-col :span="18">
               <CodeEditor
-                :value="executionResult.message"
+                :value="executionResult.message ?? ''"
                 :language="plaintext"
                 :read-only="true"
                 :editor-name="OUTPUT_EDITOR_PREFIX + '_' + index"
@@ -183,7 +189,9 @@
                   <a-row>
                     <a-col :span="8">执行状态</a-col>
                     <a-col :span="16">
-                      <a-tag :color="getStatusColor(executionResult.exitCode)">
+                      <a-tag
+                        :color="getStatusColor(executionResult.exitCode ?? 0)"
+                      >
                         <template #icon>
                           <icon-check-circle-fill
                             v-if="
@@ -212,7 +220,7 @@
                       <a-statistic
                         v-if="outputListInfoShow[index]"
                         :animation="true"
-                        :value="executionResult.memoryCost / 1024"
+                        :value="(executionResult.memoryCost ?? 0) / 1024"
                         :animation-duration="1000"
                         class="my-statistic"
                         :value-style="{ fontSize: '14px' }"
@@ -255,13 +263,14 @@
 <script setup lang="ts">
 import { Modal } from "@arco-design/web-vue";
 import message from "@arco-design/web-vue/es/message";
-import { defineComponent, ref, onMounted, reactive, nextTick } from "vue";
+import { defineComponent, ref, onMounted, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import {
   LanguagesService,
   dto_ExecuteCodeRequest,
   CodeExecutionService,
+  vo_ExecuteMessageVO,
 } from "../../generated/";
 import CodeEditor from "@/components/CodeEditor.vue";
 import {
@@ -280,14 +289,23 @@ const executeLoad = ref<boolean>(false);
 const form = ref<dto_ExecuteCodeRequest>({
   language: "",
   code: "",
-  inputList: [],
+  inputList: [] as any[],
 });
-// 默认主题
-const themeSelect = ref("vs-dark");
+
+interface LanguageFrom {
+  themeSelect?: string;
+}
+const languageFrom = ref<LanguageFrom>({
+  // 默认主题
+  themeSelect:"vs-dark",
+});
+
 const themeList = ref(["vs-dark", "hc-black", "vs", "hc-light"]);
 
+const plaintext = ref<string>("plaintext");
+
 // 程序执行结果
-const executionResultList = ref([
+const executionResultList = ref<vo_ExecuteMessageVO[]>([
   // {
   //   exitCode: 0,
   //   message: "11\n",
@@ -317,7 +335,7 @@ const executionResultList = ref([
   //   memoryCost: 0,
   // },
 ]);
-const alias2language = reactive({});
+const alias2language=ref< { [key: string]: string } >({});
 const languageList = ref<String>();
 
 const store = useStore();
@@ -329,13 +347,13 @@ const OUTPUT_EDITOR_PREFIX = "inputEditor";
 const tooltipContent = ref("最多可有" + MAX_INPUT_LEN + "个输入用例");
 
 // 控制输出用例额外信息是否显示
-const outputListInfoShow = ref([]);
+const outputListInfoShow = ref<boolean[]>([]);
 
 // 用于标识输入用例 ( changeInputContent 函数通过名字来获取其在 inputList 中的下标，进而更新对应的 inputList[idx] )
-const inputIds = ref({});
+const inputIds = ref<{ [key: string]: number }>({});
 // 生成 uuid
-const guid2: string = () => {
-  const S4: string = () => {
+const guid2 = (): string => {
+  const S4 = (): string => {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   };
   return (
@@ -368,8 +386,8 @@ const loadData = async () => {
     languageList.value = res.data;
     handleLanguageAlias(res.data);
     // 如果返回的列表非空，则使用第一个作为默认的
-    if (languageList.value?.length > 0) {
-      form.value.language = languageList.value[0];
+    if ((languageList.value?.length ?? 0) > 0) {
+      form.value.language = languageList.value?.[0] ?? "";
     }
   }
 };
@@ -377,7 +395,7 @@ const loadData = async () => {
 const handleLanguageAlias = (aliasList: string[]) => {
   aliasList.forEach((alias) => {
     // 将编程语言和版本分离并转小写
-    alias2language[alias] = alias.split("-")[0].toLowerCase();
+    alias2language.value[alias] = alias.split("-")[0].toLowerCase();
   });
   console.log(alias2language);
 };
@@ -390,7 +408,7 @@ onMounted(() => {
 // 添加输入
 const MAX_INPUT_ITEM = 5;
 const addBtnClk = () => {
-  if (form.value.inputList?.length < MAX_INPUT_ITEM) {
+  if ((form.value.inputList?.length ?? 0) < MAX_INPUT_ITEM) {
     form.value.inputList?.push("");
     message.info("已添加1个输入框，总共" + form.value.inputList?.length + "个");
   } else {
@@ -413,7 +431,7 @@ const addBtnClk = () => {
 //   });
 // };
 
-const addictionBtnClk = (idx) => {};
+const addictionBtnClk = (idx: any) => {};
 
 const checkForm = (): boolean => {
   // 不能仅包含空白字符
@@ -455,7 +473,10 @@ const changeInputContent = (editorName: string, value: string) => {
   const uuidStr = editorName.substring(INPUT_EDITOR_PREFIX.length + 1);
   // 根据子组件传递上来的值，更新数据
   const changeIdx = inputIds.value[uuidStr];
-  form.value.inputList[changeIdx] = value;
+  if (form.value.inputList) {
+    form.value.inputList![changeIdx] = value;
+  }
+
   console.log("inputList = ", form.value.inputList);
 };
 
@@ -476,8 +497,8 @@ const goLogin = () => {
 // 用于转换执行状态的信息
 const statusText = ["正常退出", "编译失败", "超时退出", "运行出错", "其他错误"];
 const statusColor = ["green", "magenta", "orange", "red", "gray"];
-const getStatusText = (code: number) => {
-  if (code >= statusText.length) {
+const getStatusText = (code: number | undefined) => {
+  if (code == undefined || code >= statusText.length) {
     return "未知错误";
   } else {
     return statusText[code];
@@ -491,9 +512,9 @@ const getStatusColor = (code: number) => {
   }
 };
 
-const themeChange = (newTheme)=>{
-  message.info(themeSelect.value)
-}
+const themeChange = (newTheme: any) => {
+  // message.info(themeSelect.value)
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

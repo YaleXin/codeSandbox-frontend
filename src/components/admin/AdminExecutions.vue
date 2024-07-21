@@ -5,7 +5,7 @@
     :columns="columns"
     :data="data"
     :pagination="paginationConfig"
-    :page-position="bottom"
+    page-position="bottom"
   >
     <!-- 代码要单独弹出展示 -->
     <template #codeOptional="{ record, rowIndex }">
@@ -20,6 +20,7 @@
         <a-row justify="center">
           <a-col :span="24">
             <CodeEditor
+            :handle-change="changeCode"
               :value="record.code"
               :read-only="true"
               :language="record.language.split('-')[0].toLowerCase()"
@@ -53,6 +54,7 @@
             <a-col :span="2">输入{{ index + 1 }}</a-col>
             <a-col :span="18">
               <CodeEditor
+              :handle-change="changeCode"
                 :value="inputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -88,6 +90,7 @@
             <a-col :span="2">输出{{ index + 1 }}</a-col>
             <a-col :span="18">
               <CodeEditor
+              :handle-change="changeCode"
                 :value="outputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -110,6 +113,7 @@ import message from "@arco-design/web-vue/es/message";
 import {
   dto_PageExecutionRequest,
   AdminService,
+  vo_UserDetailVO
 } from "../../../generated";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -168,18 +172,19 @@ const columns = [
   },
 ];
 // 表格数据
-const data = ref([]);
+const data = ref<vo_UserDetailVO[]>([]);
 // 控制代码是否显示
-const codeListShow = ref([]);
+const codeListShow =  ref<boolean[]>([]);
 // 控制输入用例是否显示
-const inputListShow = ref([]);
+const inputListShow = ref<boolean[]>([]);
 // 控制输出用例是否显示
-const outputListShow = ref([]);
-const handlePageChange = (pageNo, pageSize) => {
+const outputListShow =  ref<boolean[]>([]);
+const plaintext = ref<string>("plaintext");
+const handlePageChange = (pageNo:number, pageSize:number) => {
   paginationConfig.value.current = pageNo;
   loadCurrentData();
 };
-const handlePageSizeChange = (pageSize) => {
+const handlePageSizeChange = (pageSize:number) => {
   paginationConfig.value.pageSize = pageSize;
   loadCurrentData();
 };
@@ -243,6 +248,8 @@ const loadCurrentData = () => {
 onMounted(() => {
   loadCurrentData();
 });
+const changeCode = (editorName: string, value: string) => {
+};
 </script>
 
 <style>
