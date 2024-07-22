@@ -141,7 +141,7 @@ const loadCurrentData = () => {
       });
     }, 500);
   } else {
-    AdminService.postApiV1AdminUser(store.state.user.loginUser.token, {
+    AdminService.postApiV1AdminUser(store.getters["user/getUser"].token, {
       pageNum: paginationConfig.value.current,
       pageSize: paginationConfig.value.pageSize,
     })
@@ -166,7 +166,7 @@ const loadCurrentData = () => {
   }
 };
 const auditBtnClk = (userId: number, rowIndex: number) => {
-  AdminService.postApiV1AdminAuditUser(store.state.user.loginUser.token, {
+  AdminService.postApiV1AdminAuditUser(store.getters["user/getUser"].token, {
     userId: userId,
   })
     .then((res) => {
@@ -183,7 +183,7 @@ const auditBtnClk = (userId: number, rowIndex: number) => {
 };
 
 const banBtnClk = (userId: number, rowIndex: number) => {
-  AdminService.postApiV1AdminBanUser(store.state.user.loginUser.token, {
+  AdminService.postApiV1AdminBanUser(store.getters["user/getUser"].token, {
     userId: userId,
   })
     .then((res) => {
@@ -200,7 +200,7 @@ const banBtnClk = (userId: number, rowIndex: number) => {
 };
 
 const cancelBanBtnClk = (userId: number, rowIndex: number) => {
-  AdminService.postApiV1AdminCancelBanUser(store.state.user.loginUser.token, {
+  AdminService.postApiV1AdminCancelBanUser(store.getters["user/getUser"].token, {
     userId: userId,
   })
     .then((res) => {

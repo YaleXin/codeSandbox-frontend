@@ -73,12 +73,21 @@
 </template>
 
 <script setup lang="ts">
-import { reactive,onMounted,ref } from "vue";
-import { RegisterService, dto_UserRegisterRequest,CaptchaService } from "../../../generated";
+import { reactive, onMounted, ref } from "vue";
+import {
+  RegisterService,
+  dto_UserRegisterRequest,
+  CaptchaService,
+} from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { IconUser, IconEmail, IconLock,IconBulb } from "@arco-design/web-vue/es/icon";
+import {
+  IconUser,
+  IconEmail,
+  IconLock,
+  IconBulb,
+} from "@arco-design/web-vue/es/icon";
 
 /**
  * 表单信息
@@ -95,7 +104,6 @@ const router = useRouter();
 const captchaImageData = ref<string>("data:image/jpeg;base64,");
 const captchaToken = ref<string>("");
 const captchaInput = ref<string>("");
-
 
 const checkForm = () => {
   if (form.password != form.checkPassword) {
@@ -132,23 +140,31 @@ const handleSubmit = async () => {
   if (!checkForm()) {
     return;
   }
-  let res = await RegisterService.postApiV1UserRegister(captchaToken.value,{
-    username: form.username,
-    email: form.email,
-    password: form.password,
-  }, captchaInput.value);
-  if (res.code == 200) {
-    message.success("注册成功，等待管理员审核后即可使用");
-    setTimeout(() => {
-      // 注册成功,跳转到主页
-      router.push({
-        path: "/",
-        replace: true,
-      });
-    }, 1000);
-  } else {
-    message.error("注册失败，" + res.msg);
-  }
+  RegisterService.postApiV1UserRegister(
+    captchaToken.value,
+    {
+      username: form.username,
+      email: form.email,
+      password: form.password,
+    },
+    captchaInput.value
+  )
+    .then((res) => {
+      if (res.code == 200) {
+        message.success("注册成功，等待管理员审核后即可使用");
+        setTimeout(() => {
+          // 注册成功,跳转到主页
+          router.push({
+            path: "/",
+            replace: true,
+          });
+        }, 1000);
+      } else {
+        message.error("注册失败，" + res.msg);
+      }
+    })
+    .catch((e) => {});
+  message.error("注册失败，服务器出错");
 };
 
 const loadCaptcha = () => {

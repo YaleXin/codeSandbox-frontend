@@ -283,6 +283,7 @@ import {
   IconCloseCircleFill,
 } from "@arco-design/web-vue/es/icon";
 import GLOBAL from "@/constants/globalConstants";
+import type { AxiosError } from "axios";
 
 // import axios from '@/plugins/axios';
 const executeLoad = ref<boolean>(false);
@@ -297,7 +298,7 @@ interface LanguageFrom {
 }
 const languageFrom = ref<LanguageFrom>({
   // 默认主题
-  themeSelect:"vs-dark",
+  themeSelect: "vs-dark",
 });
 
 const themeList = ref(["vs-dark", "hc-black", "vs", "hc-light"]);
@@ -335,7 +336,7 @@ const executionResultList = ref<vo_ExecuteMessageVO[]>([
   //   memoryCost: 0,
   // },
 ]);
-const alias2language=ref< { [key: string]: string } >({});
+const alias2language = ref<{ [key: string]: string }>({});
 const languageList = ref<String>();
 
 const store = useStore();
@@ -378,18 +379,23 @@ const generateInputId = (idx: number) => {
 };
 
 const loadData = async () => {
-  const res = await LanguagesService.getApiV1Languages();
-  console.log("res=", res);
-  if (res.code != 200) {
-    message.error("获取编程语言失败");
-  } else {
-    languageList.value = res.data;
-    handleLanguageAlias(res.data);
-    // 如果返回的列表非空，则使用第一个作为默认的
-    if ((languageList.value?.length ?? 0) > 0) {
-      form.value.language = languageList.value?.[0] ?? "";
-    }
-  }
+  LanguagesService.getApiV1Languages()
+    .then((res) => {
+      console.log("res=", res);
+      if (res.code != 200) {
+        message.error("获取编程语言失败");
+      } else {
+        languageList.value = res.data;
+        handleLanguageAlias(res.data);
+        // 如果返回的列表非空，则使用第一个作为默认的
+        if ((languageList.value?.length ?? 0) > 0) {
+          form.value.language = languageList.value?.[0] ?? "";
+        }
+      }
+    })
+    .catch((e) => {
+      message.error("加载【支持的编程语言】失败");
+    });
 };
 // 后端返回的是 language<-version>
 const handleLanguageAlias = (aliasList: string[]) => {
@@ -449,21 +455,26 @@ const executeBtnClk = async () => {
   executionResultList.value = [];
   console.log(form.value);
   executeLoad.value = true;
-  const res = await CodeExecutionService.postApiV1ExecuteCode(
-    store.state.user.loginUser.token,
+  CodeExecutionService.postApiV1ExecuteCode(
+    store.getters["user/getUser"].token,
     form.value
-  );
-  executeLoad.value = false;
-  if (res.code != 200) {
-    message.error("请求失败：" + res.msg);
-  } else {
-    console.log("exec res = ", res.data);
-    executionResultList.value = res.data.executeMessages;
-    console.log("executionResultList = ", executionResultList.value);
-    outputListInfoShow.value = new Array(executionResultList.value.length).fill(
-      false
-    );
-  }
+  )
+    .then((res) => {
+      executeLoad.value = false;
+      if (res.code != 200) {
+        message.error("请求失败：" + res.msg);
+      } else {
+        console.log("exec res = ", res.data);
+        executionResultList.value = res.data.executeMessages;
+        console.log("executionResultList = ", executionResultList.value);
+        outputListInfoShow.value = new Array(
+          executionResultList.value.length
+        ).fill(false);
+      }
+    })
+    .catch((e) => {
+      message.error("提交代码失败，服务器出错");
+    });
 };
 
 const changeOutputContent = (editorName: string, value: string) => {};

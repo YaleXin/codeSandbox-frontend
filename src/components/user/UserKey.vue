@@ -136,7 +136,7 @@ const loadCurrentData = () => {
     message.error("未登录，即将跳转登录页面");
     goLogin();
   } else {
-    KeyListService.getApiV1UserKeys(store.state.user.loginUser.token)
+    KeyListService.getApiV1UserKeys(store.getters["user/getUser"].token)
       .then((res) => {
         if (res.code != 200) {
           message.error("获取失败:" + res.msg);
@@ -161,7 +161,7 @@ const loadCurrentData = () => {
 const addBtnClk = () => {
   // 防抖开启
   addBtnAntiShake.value = true;
-  NewKeyService.postApiV1UserNewKey(store.state.user.loginUser.token)
+  NewKeyService.postApiV1UserNewKey(store.getters["user/getUser"].token)
     .then((res) => {
       if (res.code == 200) {
         message.success("增加成功！");
@@ -186,7 +186,7 @@ const delBtnClk = (rowIndx: number, keyId: number) => {
       "你确定要删除这个输入 key 吗，后续将无法通过该 key 进行程序式调用？",
     onOk: () => {
       console.log("removeBtnClk, rowIndx=", rowIndx, ", keyId = ", keyId);
-      DeleteKeyService.deleteApiV1UserDelKey(store.state.user.loginUser.token, {
+      DeleteKeyService.deleteApiV1UserDelKey(store.getters["user/getUser"].token, {
         id: keyId,
       })
         .then((res) => {

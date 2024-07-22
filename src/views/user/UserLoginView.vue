@@ -93,29 +93,33 @@ const handleSubmit = async () => {
   if (!checkForm()) {
     return;
   }
-  let res = await LoginService.postApiV1UserLogin(
+  LoginService.postApiV1UserLogin(
     form.value,
     captchaToken.value,
     captchaInput.value
-  );
-
-  if (res.code == 200) {
-    message.success("登录成功");
-    // 登录成功, 保存到 vuex 并跳转
-    store
-      .dispatch("user/saveLoginUser", res.data)
-      .then((ans) => {
-        router.push({
-          path: "/",
-          replace: true, //不会占用浏览器历史页面的堆栈,直接替换当前的登录页
-        });
-      })
-      .catch((e) => {
-        message.error("保存用户到本地失败，错误原因：" + e);
-      });
-  } else {
-    message.error("登录失败，" + res.msg);
-  }
+  )
+    .then((res) => {
+      if (res.code == 200) {
+        message.success("登录成功");
+        // 登录成功, 保存到 vuex 并跳转
+        store
+          .dispatch("user/saveLoginUser", res.data)
+          .then((ans) => {
+            router.push({
+              path: "/",
+              replace: true, //不会占用浏览器历史页面的堆栈,直接替换当前的登录页
+            });
+          })
+          .catch((e) => {
+            message.error("保存用户到本地失败，错误原因：" + e);
+          });
+      } else {
+        message.error("登录失败，" + res.msg);
+      }
+    })
+    .catch((e) => {
+      message.error("登录失败，服务器错误");
+    });
 };
 const loadCaptcha = () => {
   CaptchaService.getApiV1Captcha()
@@ -125,11 +129,11 @@ const loadCaptcha = () => {
           "data:image/jpeg;base64," + res.data.imageBase64;
         captchaToken.value = res.data.token;
       } else {
-        message.error("获取验证码失败：" + res.msg + "，请刷新页面");
+        message.error("获取验证码失败，请刷新页面");
       }
     })
     .catch((e) => {
-      message.error("获取验证码失败：" + e + "，请刷新页面");
+      message.error("获取验证码失败，请刷新页面");
     });
 };
 onMounted(() => {

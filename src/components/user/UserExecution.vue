@@ -283,7 +283,7 @@ const loadCurrentData = () => {
     }, 500);
   } else {
     PageExecutionService.postApiV1UserExecution(
-      store.state.user.loginUser.token,
+      store.getters["user/getUser"].token,
       {
         pageNum: paginationConfig.value.current,
         pageSize: paginationConfig.value.pageSize,

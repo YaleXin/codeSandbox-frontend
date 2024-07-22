@@ -169,7 +169,8 @@ const loadData = async () => {
       });
     }, 500);
   } else {
-    UserInfoService.getApiV1UserInfo(store.state.user.loginUser.token)
+    console.log('store.getters["user/getUser"]=',store.getters["user/getUser"]);
+    UserInfoService.getApiV1UserInfo(store.getters["user/getUser"].token)
       .then((res) => {
         if (res.code != 200) {
           message.error("获取失败:" + res.msg);
@@ -219,7 +220,7 @@ const handleSubmit = async () => {
   }
   console.log("form=", form);
   ChangePasswordService.putApiV1UserChangePwd(
-    store.state.user.loginUser.token,
+    store.getters["user/getUser"].token,
     {
       oldPassword: form.value.oldPassword,
       newPassword: form.value.newPassword,

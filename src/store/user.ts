@@ -11,7 +11,7 @@ export default {
       } else {
         // 否则，从 localStorage 中读取
         let localData: string = localStorage.getItem('loginUser') || JSON.stringify(state.loginUser);
-        return state.loginUser;
+        return JSON.parse(localData);
       }
 
     }
