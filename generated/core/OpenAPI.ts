@@ -20,7 +20,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-    BASE: process.env.VUE_APP_PUBLIC_PATH || "",
+    BASE: process.env.VUE_APP_BACKEND_API_RUL || "http://localhost:8080",
     VERSION: '1.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',

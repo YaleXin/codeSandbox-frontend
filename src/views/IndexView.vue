@@ -394,6 +394,7 @@ const loadData = async () => {
       }
     })
     .catch((e) => {
+      console.log(e);
       message.error("加载【支持的编程语言】失败");
     });
 };
@@ -464,6 +465,11 @@ const executeBtnClk = async () => {
       if (res.code != 200) {
         message.error("请求失败：" + res.msg);
       } else {
+        message.success(
+          "执行完成，共" +
+            (res.data.executeMessages?.length ?? 0) +
+            "个输出，请往下滑动鼠标查看"
+        );
         console.log("exec res = ", res.data);
         executionResultList.value = res.data.executeMessages;
         console.log("executionResultList = ", executionResultList.value);

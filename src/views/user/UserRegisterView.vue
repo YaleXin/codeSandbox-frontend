@@ -159,12 +159,13 @@ const handleSubmit = async () => {
             replace: true,
           });
         }, 1000);
+      } else if (res.code == 42900) {
+        message.info("请求过快，请稍后再试");
       } else {
         message.error("注册失败，" + res.msg);
       }
     })
     .catch((e) => {});
-  message.error("注册失败，服务器出错");
 };
 
 const loadCaptcha = () => {

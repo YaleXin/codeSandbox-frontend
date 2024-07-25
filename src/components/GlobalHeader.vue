@@ -26,6 +26,7 @@
           <template #icon>
             <icon-home v-if="item.name == '首页'" />
             <icon-user v-else-if="item.name == '用户首页'" />
+            <icon-bulb v-else-if="item.name == 'Q&A'" />
           </template>
           {{ item.name }}
         </a-menu-item>
@@ -64,7 +65,7 @@ import { routes } from "../router/routes";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { IconUser, IconHome } from "@arco-design/web-vue/es/icon";
+import { IconUser, IconHome,IconBulb } from "@arco-design/web-vue/es/icon";
 import { UserControllerService } from "../../generated/user";
 
 const loginClick = async () => {

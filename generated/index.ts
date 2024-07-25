@@ -22,6 +22,7 @@ export type { vo_ExecuteMessageVO } from './models/vo_ExecuteMessageVO';
 export type { vo_ExecutionVO } from './models/vo_ExecutionVO';
 export type { vo_KeyPairVO } from './models/vo_KeyPairVO';
 export type { vo_PageDataVO } from './models/vo_PageDataVO';
+export type { vo_QuestionAndAnswer } from './models/vo_QuestionAndAnswer';
 export type { vo_UserDetailVO } from './models/vo_UserDetailVO';
 export type { vo_UserVO } from './models/vo_UserVO';
 
@@ -35,5 +36,6 @@ export { LanguagesService } from './services/LanguagesService';
 export { LoginService } from './services/LoginService';
 export { NewKeyService } from './services/NewKeyService';
 export { PageExecutionService } from './services/PageExecutionService';
+export { QuestionAndAnswerService } from './services/QuestionAndAnswerService';
 export { RegisterService } from './services/RegisterService';
 export { UserInfoService } from './services/UserInfoService';

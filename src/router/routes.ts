@@ -1,33 +1,28 @@
 import { RouteRecordRaw } from "vue-router";
-import UserInfo from "@/components/user/UserInfo.vue"
-import UserExecution from "@/components/user/UserExecution.vue"
-import UserKey from "@/components/user/UserKey.vue"
-import UserLoginView from "@/views/user/UserLoginView.vue";
-import UserIndexView from "@/views/user/UserIndexView.vue";
-import UserRegisterView from "@/views/user/UserRegisterView.vue"
-import NotFoundView from "@/views/404.vue"
-
-import AdminIndexView from "@/views/admin/AdminIndexView.vue"
-import AdminUsers from "@/components/admin/AdminUsers.vue"
-import AdminExecutions from "@/components/admin/AdminExecutions.vue"
-
-import IndexView from "@/views/IndexView.vue";
 import ACCESS_ENUM from "@/access/accessEnum";
 
 export const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/index"
+    redirect: "/index",
+    meta: {
+      hideInMenu: true,
+    }
   },
   {
     path: "/index",
     name: "首页",
-    component: IndexView,
+    component: () => import("@/views/IndexView.vue"),
+  },
+  {
+    path: "/qa",
+    name: "Q&A",
+    component: () => import("@/views/QuestionAndAnswer.vue"),
   },
   {
     path: "/user",
     name: "用户首页",
-    component: UserIndexView,
+    component: () => import("@/views/user/UserIndexView.vue"),
     children: [
       {
         path: "/user/",
@@ -36,17 +31,17 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "/user/info",
         name: "用户信息",
-        component: UserInfo,
+        component: () => import("@/components/user/UserInfo.vue"),
       },
       {
         path: "/user/execution",
         name: "执行记录",
-        component: UserExecution,
+        component: () => import("@/components/user/UserExecution.vue"),
       },
       {
         path: "/user/key",
         name: "程序调用key",
-        component: UserKey,
+        component: () => import("@/components/user/UserKey.vue"),
       }
     ],
     meta: {
@@ -56,7 +51,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/user/login",
     name: "用户登录",
-    component: UserLoginView,
+    component: () => import("@/views/user/UserLoginView.vue"),
     meta: {
       hideInMenu: true
     }
@@ -64,16 +59,15 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/user/register",
     name: "用户注册",
-    component: UserRegisterView,
+    component: () => import("@/views/user/UserRegisterView.vue"),
     meta: {
       hideInMenu: true
     }
   },
-
   {
     path: "/admin",
     name: "管理员首页",
-    component: AdminIndexView,
+    component: () => import("@/views/admin/AdminIndexView.vue"),
     children: [
       {
         path: "/admin/",
@@ -82,12 +76,12 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "/admin/users",
         name: "用户列表",
-        component: AdminUsers,
+        component: () => import("@/components/admin/AdminUsers.vue"),
       },
       {
         path: "/admin/executions",
         name: "用户执行记录",
-        component: AdminExecutions,
+        component: () => import("@/components/admin/AdminExecutions.vue"),
       },
     ],
     meta: {
@@ -95,13 +89,11 @@ export const routes: Array<RouteRecordRaw> = [
       hideInMenu: true,
     }
   },
-
   {
     path: '/:pathMatch(.*)*',
-    component: NotFoundView,
+    component: () => import("@/views/404.vue"),
     meta: {
       hideInMenu: true,
     }
   }
-
 ];
