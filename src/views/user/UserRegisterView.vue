@@ -165,7 +165,9 @@ const handleSubmit = async () => {
         message.error("注册失败，" + res.msg);
       }
     })
-    .catch((e) => {});
+    .catch((e) => {
+      message.error("注册失败，请稍后再试");
+    });
 };
 
 const loadCaptcha = () => {

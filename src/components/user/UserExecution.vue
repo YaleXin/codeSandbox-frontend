@@ -19,8 +19,10 @@
         <template #title> {{ record.language }} </template>
         <a-row justify="center">
           <a-col :span="24">
+            <!-- 必须要用 v-if 重新渲染，否则数据是旧的 -->
             <CodeEditor
-            :handle-change="changeCode"
+              v-if="codeListShow[rowIndex]"
+              :handle-change="changeCode"
               :value="record.code"
               :read-only="true"
               :language="record.language.split('-')[0].toLowerCase()"
@@ -52,8 +54,10 @@
           >
             <a-col :span="2">输入{{ index + 1 }}</a-col>
             <a-col :span="18">
+              <!-- 必须要用 v-if 重新渲染，否则数据是旧的 -->
               <CodeEditor
-              :handle-change="changeCode"
+                v-if="inputListShow[rowIndex]"
+                :handle-change="changeCode"
                 :value="inputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -88,8 +92,10 @@
           >
             <a-col :span="2">输出{{ index + 1 }}</a-col>
             <a-col :span="18">
+              <!-- 必须要用 v-if 重新渲染，否则数据是旧的 -->
               <CodeEditor
-              :handle-change="changeCode"
+                v-if="outputListShow[rowIndex]"
+                :handle-change="changeCode"
                 :value="outputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -148,31 +154,26 @@
         异常结束
       </a-tag>
 
-       <a-tag
+      <a-tag
         color="gray"
         v-else-if="record.status == GLOBAL.EXECUTION_STATUS.RUNNING"
       >
         <template #icon>
-         <icon-info-circle-fill />
+          <icon-info-circle-fill />
         </template>
         监测异常
       </a-tag>
 
-      
-       <a-tag
-        color="magenta"
-        v-else
-      >
+      <a-tag color="magenta" v-else>
         <template #icon>
-         <icon-exclamation />
+          <icon-exclamation />
         </template>
         未知情况
       </a-tag>
-      
     </template>
     <!-- 时间戳 -->
     <template #createAtOptional="{ record }">
-      {{ goTimeStrFormat(record.createAt)}}
+      {{ goTimeStrFormat(record.createAt) }}
     </template>
   </a-table>
 </template>
@@ -188,7 +189,12 @@ import {
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import GLOBAL from "@/constants/globalConstants";
-import { IconCheckCircleFill,IconCloseCircleFill ,IconInfoCircleFill, IconExclamation} from "@arco-design/web-vue/es/icon";
+import {
+  IconCheckCircleFill,
+  IconCloseCircleFill,
+  IconInfoCircleFill,
+  IconExclamation,
+} from "@arco-design/web-vue/es/icon";
 
 const store = useStore();
 const router = useRouter();
@@ -244,11 +250,11 @@ const codeListShow = ref<boolean[]>([]);
 const inputListShow = ref<boolean[]>([]);
 // 控制输出用例是否显示
 const outputListShow = ref<boolean[]>([]);
-const handlePageChange = (pageNo:number, pageSize:number) => {
+const handlePageChange = (pageNo: number, pageSize: number) => {
   paginationConfig.value.current = pageNo;
   loadCurrentData();
 };
-const handlePageSizeChange = (pageSize:number) => {
+const handlePageSizeChange = (pageSize: number) => {
   paginationConfig.value.pageSize = pageSize;
   loadCurrentData();
 };
@@ -294,6 +300,7 @@ const loadCurrentData = () => {
           message.error("获取失败:" + res.msg);
         } else {
           data.value = res.data.data;
+          console.log("data.value = ", data.value);
           paginationConfig.value.total = res.data.total;
           codeListShow.value = new Array(data.value.length).fill(false);
           inputListShow.value = new Array(data.value.length).fill(false);
@@ -313,11 +320,10 @@ onMounted(() => {
   loadCurrentData();
 });
 // 格式化go的time字符串（2024-07-13T18:44:49+08:00）
-const goTimeStrFormat = (timeStr:string):string=>{
-  return (new Date(timeStr)).toISOString().substring(0, 19).replace('T', ' ');
-}
-const changeCode = (editorName: string, value: string) => {
+const goTimeStrFormat = (timeStr: string): string => {
+  return new Date(timeStr).toISOString().substring(0, 19).replace("T", " ");
 };
+const changeCode = (editorName: string, value: string) => {};
 </script>
 
 <style>

@@ -19,8 +19,10 @@
         <template #title> {{ record.language }} </template>
         <a-row justify="center">
           <a-col :span="24">
+            <!-- 必须要用 v-if 重新渲染，否则数据是旧的 -->
             <CodeEditor
-            :handle-change="changeCode"
+              v-if="codeListShow[rowIndex]"
+              :handle-change="changeCode"
               :value="record.code"
               :read-only="true"
               :language="record.language.split('-')[0].toLowerCase()"
@@ -36,10 +38,9 @@
         type="outline"
         @click="inputListShow[rowIndex] = true"
         status="success"
-        >
-        {{ record.inputList?.length }}
-        </a-button
       >
+        {{ record.inputList?.length }}
+      </a-button>
       <a-modal v-model:visible="inputListShow[rowIndex]" width="70%">
         <template #title> 你的输入列表</template>
 
@@ -53,8 +54,10 @@
           >
             <a-col :span="2">输入{{ index + 1 }}</a-col>
             <a-col :span="18">
+              <!-- 必须要用 v-if 重新渲染，否则数据是旧的 -->
               <CodeEditor
-              :handle-change="changeCode"
+                v-if="inputListShow[rowIndex]"
+                :handle-change="changeCode"
                 :value="inputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -89,8 +92,10 @@
           >
             <a-col :span="2">输出{{ index + 1 }}</a-col>
             <a-col :span="18">
+              <!-- 必须要用 v-if 重新渲染，否则数据是旧的 -->
               <CodeEditor
-              :handle-change="changeCode"
+                v-if="outputListShow[rowIndex]"
+                :handle-change="changeCode"
                 :value="outputStr"
                 :language="plaintext"
                 :read-only="true"
@@ -103,17 +108,56 @@
         </a-scrollbar>
       </a-modal>
     </template>
+    <!-- 执行状态 -->
+    <template #statusOptional="{ record }">
+      <a-tag
+        color="green"
+        v-if="record.status == GLOBAL.EXECUTION_STATUS.NORMAL_EXIT"
+      >
+        <template #icon>
+          <icon-check-circle-fill />
+        </template>
+        正常结束
+      </a-tag>
+      <a-tag
+        color="red"
+        v-else-if="record.status == GLOBAL.EXECUTION_STATUS.ERROR_EXIT"
+      >
+        <template #icon>
+          <icon-close-circle-fill />
+        </template>
+        异常结束
+      </a-tag>
+
+      <a-tag
+        color="gray"
+        v-else-if="record.status == GLOBAL.EXECUTION_STATUS.RUNNING"
+      >
+        <template #icon>
+          <icon-info-circle-fill />
+        </template>
+        监测异常
+      </a-tag>
+
+      <a-tag color="magenta" v-else>
+        <template #icon>
+          <icon-exclamation />
+        </template>
+        未知情况
+      </a-tag>
+    </template>
   </a-table>
 </template>
 
 <script setup lang="ts">
+import GLOBAL from "@/constants/globalConstants";
 import CodeEditor from "@/components/CodeEditor.vue";
 import { ref, onMounted } from "vue";
 import message from "@arco-design/web-vue/es/message";
 import {
   dto_PageExecutionRequest,
   AdminService,
-  vo_UserDetailVO
+  vo_UserDetailVO,
 } from "../../../generated";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -164,7 +208,7 @@ const columns = [
   },
   {
     title: "执行状态",
-    dataIndex: "status",
+    slotName: "statusOptional",
   },
   {
     title: "执行时间戳",
@@ -174,17 +218,17 @@ const columns = [
 // 表格数据
 const data = ref<vo_UserDetailVO[]>([]);
 // 控制代码是否显示
-const codeListShow =  ref<boolean[]>([]);
+const codeListShow = ref<boolean[]>([]);
 // 控制输入用例是否显示
 const inputListShow = ref<boolean[]>([]);
 // 控制输出用例是否显示
-const outputListShow =  ref<boolean[]>([]);
+const outputListShow = ref<boolean[]>([]);
 const plaintext = ref<string>("plaintext");
-const handlePageChange = (pageNo:number, pageSize:number) => {
+const handlePageChange = (pageNo: number, pageSize: number) => {
   paginationConfig.value.current = pageNo;
   loadCurrentData();
 };
-const handlePageSizeChange = (pageSize:number) => {
+const handlePageSizeChange = (pageSize: number) => {
   paginationConfig.value.pageSize = pageSize;
   loadCurrentData();
 };
@@ -218,13 +262,10 @@ const loadCurrentData = () => {
       });
     }, 500);
   } else {
-    AdminService.postApiV1AdminExecution(
-      store.getters["user/getUser"].token,
-      {
-        pageNum: paginationConfig.value.current,
-        pageSize: paginationConfig.value.pageSize,
-      }
-    )
+    AdminService.postApiV1AdminExecution(store.getters["user/getUser"].token, {
+      pageNum: paginationConfig.value.current,
+      pageSize: paginationConfig.value.pageSize,
+    })
       .then((res) => {
         if (res.code != 200) {
           message.error("获取失败:" + res.msg);
@@ -248,8 +289,7 @@ const loadCurrentData = () => {
 onMounted(() => {
   loadCurrentData();
 });
-const changeCode = (editorName: string, value: string) => {
-};
+const changeCode = (editorName: string, value: string) => {};
 </script>
 
 <style>
